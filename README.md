@@ -1,0 +1,2 @@
+# ASExtractor
+Chinese automate summarization
