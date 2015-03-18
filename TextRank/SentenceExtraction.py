@@ -66,6 +66,9 @@ class SentenceExtraction(object):
 			self.key_sentences.append(self.sentences[index])
 
 	def _get_similarity(self, sentence1, sentence2):
+		'''
+		计算句子相似度,sentence1,sentence2为待计算的两句子
+		'''
 		words = list(set(sentence1+sentence2))
 		vector1 = [float(sentence1.count(word)) for word in words]
 		vector2 = [float(sentence2.count(word)) for word in words]
@@ -79,15 +82,20 @@ class SentenceExtraction(object):
 			return 0.
 		return num_of_common_words / denominator
 
-	def get_key_sentences(self, num = 6, sentences_min_len = 6):
+	def get_key_sentences(self, sentences_min_len = 6, limitedlen = 100):
+		'''
+		获取关键句子，形成摘要。
+		'''
 		result = []
-		count = 0
+		total_len = 0
 		for sentence in self.key_sentences:
-			if count >= num:
+			if total_len >= limitedlen:
 				break
-			if len(sentence) >= sentences_min_len:
-				result.append(sentence)
-				count += 1
+			tmp = len(sentence)
+			if tmp >= sentences_min_len :
+				if total_len+tmp  < limitedlen:
+					result.append(sentence)
+					total_len += tmp
 		return result
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 import wx
 import os
 import codecs
+from Extractor import Extractor
 from TextRank import KeywordExtraction, SentenceExtraction
 import sys
 reload(sys)
@@ -10,7 +11,7 @@ sys.setdefaultencoding('utf-8')
 class ASExtractor(wx.Frame):
 	"""docstring for ASExtractors"""
 	def __init__(self, parent, title):
-		wx.Frame.__init__(self, parent, title=title, size=(800,-1))
+		wx.Frame.__init__(self, parent, title=title, size=(800,600))
 		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE | wx.HSCROLL)
 		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE | wx.HSCROLL)
 		self.CreateStatusBar()
@@ -36,6 +37,9 @@ class ASExtractor(wx.Frame):
 		extractButton = wx.Button(self,label="Extract")
 		clearButton = wx.Button(self,label="Clear") 
 		text = wx.StaticText(self,label="The source article is bellow :")
+		limiteNum_label = wx.StaticText(self,-1,"限制字数:")
+		self.limiteLen = wx.TextCtrl(self,value="100")
+
 		# Set events
 		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)	
 		self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
@@ -45,8 +49,10 @@ class ASExtractor(wx.Frame):
 
 		# Set the Layout
 		hbox = wx.BoxSizer()
-		hbox.Add(extractButton,proportion=0,flag=wx.RIGHT,border=5)
-		hbox.Add(clearButton,proportion=0,flag=wx.RIGHT,border=5)
+		hbox.Add(limiteNum_label,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(self.limiteLen,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(extractButton,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(clearButton,proportion=0,flag=wx.ALIGN_CENTER)
 
 		vbox = wx.BoxSizer(wx.VERTICAL)
 		vbox.Add(text,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
@@ -55,6 +61,7 @@ class ASExtractor(wx.Frame):
 		vbox.Add(self.abstractPage,proportion=1,flag=wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT,border=5)
 
 		self.SetSizer(vbox)
+		self.Center()
 		self.Show(True)
 	
 	def OnOpen(self,events):
@@ -67,7 +74,6 @@ class ASExtractor(wx.Frame):
 			f = codecs.open(os.path.join(self.dirname, self.filename), 'r', 'utf-8')
 			self.sourcePage.SetValue(f.read())
 			f.close()
-
 		dlg.Destroy()
 
 	def OnExit(self,events):
@@ -82,27 +88,50 @@ class ASExtractor(wx.Frame):
 		text = self.sourcePage.GetValue().strip()
 		if text != '':
 			#print "Click on extractButton"
-			keyword_extraction = KeywordExtraction(stop_words_file='./stopword.data')  # 导入停止词
+			#keyword_extraction = KeywordExtraction(stop_words_file='./stopword.data')  # 导入停止词
 			#使用词性过滤，文本小写，窗口为2
-			keyword_extraction.train(text=text, speech_tag_filter=True, lower=True, window=2)  
+			#keyword_extraction.train(text=text, speech_tag_filter=True, lower=True, window=2)  
 
-			result = '关键词：\n'
+			#result = '关键词：\n'
 			# 20个关键词且每个的长度最小为1
-			result +='/'.join(keyword_extraction.get_keywords(20, word_min_len=1))  
+			#result +='/'.join(keyword_extraction.get_keywords(20, word_min_len=1))  
 
-			result += '\n关键短语：\n'
+			#result += '\n关键短语：\n'
 			# 20个关键词去构造短语，短语在原文本中出现次数最少为2
-			result += '/'.join(keyword_extraction.get_keyphrases(keywords_num=20, min_occur_num= 2))  
+			#result += '/'.join(keyword_extraction.get_keyphrases(keywords_num=20, min_occur_num= 2))  
 			    
-			sentence_extractiorn = SentenceExtraction(stop_words_file='./stopword.data')
+			#sentence_extractiorn = SentenceExtraction(stop_words_file='./stopword.data')
 
 			# 使用词性过滤，文本小写，使用words_all_filters生成句子之间的相似性
-			sentence_extractiorn.train(text=text, speech_tag_filter=True, lower=True, source = 'all_filters')
+			#sentence_extractiorn.train(text=text, speech_tag_filter=True, lower=True, source = 'all_filters')
+			#result += '\n\n摘要：\n'
+			#abstract = '\n'.join(sentence_extractiorn.get_key_sentences(limitedlen=limitelen)) # 重要性最高的三个句子
+			#print len(abstract)		
+			#result += abstract
+			limitelen = self.limiteLen.GetValue()
+			try:
+				if type(eval(limitelen)) == int:
+					limitelen = int(limitelen)
+			except Exception, e:
+				raise e	
+			
+			extractor = Extractor(stop_words_file='./stopword.data')
+			keyword,keyphrase = extractor.keyword_train(text=text)
+			abstract = extractor.sentence_train(text, limitedlen=limitelen)
+			
+			result = '关键词：\n' + '/'.join(keyword)
+			result += '\n关键短语：\n' + '/'.join(keyphrase)
+			result += '\n摘要：\n' + '...'.join(abstract)
 
-			result += '\n\n摘要：\n'
-			result += '\n'.join(sentence_extractiorn.get_key_sentences(num=2)) # 重要性最高的三个句子
 			self.abstractPage.SetValue(result)
 		else:
+			#test 
+			limitelen = self.limiteLen.GetValue()
+			try:
+				if type(eval(limitelen)) == int:
+					print int(limitelen)
+			except Exception, e:
+				raise e	
 			print "No article"
 
 	def OnClear(self,events):
