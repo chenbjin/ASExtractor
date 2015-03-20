@@ -25,7 +25,7 @@ class SentenceExtraction(object):
 		self.graph = None
 		self.key_sentences = None
 
-	def train(self, text, lower = False, speech_tag_filter = True,source = 'no_stop_words'):
+	def train(self, text, lower = False, speech_tag_filter = True,source = 'all_filters'):
 		'''
 		text: 待处理文本
 		lower: 是否将文本转化为小写
@@ -55,8 +55,8 @@ class SentenceExtraction(object):
 		for x in xrange(sentences_num):
 			for y in xrange(x,sentences_num):
 				similarity = sim_function(source[x],source[y])
-				self.graph[x][y] = similarity
-				self.graph[y][x] = similarity
+				self.graph[x,y] = similarity
+				self.graph[y,x] = similarity
 
 		nx_graph = nx.from_numpy_matrix(self.graph)
 		scores = nx.pagerank(nx_graph)
@@ -82,29 +82,37 @@ class SentenceExtraction(object):
 			return 0.
 		return num_of_common_words / denominator
 
-	def get_key_sentences(self, sentences_min_len = 6, limitedlen = 100):
+	def get_key_sentences(self, sentences_min_len = 6, sentences_percent = '10%'):
 		'''
 		获取关键句子，形成摘要。
 		'''
 		result = []
 		total_len = 0
+		sentences_percent = filter(lambda x:x.isdigit(), sentences_percent)
+		sentences_num = (len(self.sentences) * int(sentences_percent) )/ 100
+		if sentences_num <= 0:
+			sentences_num = 1
+		#test
+		print len(self.sentences)
+		print sentences_percent
+		print sentences_num
+
 		for sentence in self.key_sentences:
-			if total_len >= limitedlen:
+			if total_len >= sentences_num:
 				break
 			tmp = len(sentence)
 			if tmp >= sentences_min_len :
-				if total_len+tmp  < limitedlen:
+				if total_len+1  <= sentences_num:
 					result.append(sentence)
-					total_len += tmp
+					total_len += 1
 		return result
 
 if __name__ == '__main__':
 	import codecs
-	text = codecs.open('../text/03.txt', 'r', 'utf-8').read()
+	text = codecs.open('../text/05.txt', 'r', 'utf-8').read()
 	key_sentences = SentenceExtraction(stop_words_file='../stopword.data')
 	key_sentences.train(text=text, lower=True, speech_tag_filter=True, source='all_filters')
 	f = codecs.open('./result_for_keysentence.txt','w+','utf-8','ignore')
-	f.write('\n'.join(key_sentences.get_key_sentences(num=1))+'\n')
-	f.write('\n'.join(key_sentences.sentences))
+	f.write('。'.decode('utf-8').join(key_sentences.get_key_sentences(sentences_percent = '10%'))+'。'.decode('utf-8'))
+	#f.write('。'.decode('utf-8').join(key_sentences.sentences)+'。'.decode('utf-8'))
 	f.close()
-

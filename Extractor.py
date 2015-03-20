@@ -15,16 +15,16 @@ class Extractor(object):
 		keyphrase_res = self.keyword_extraction.get_keyphrases(keywords_num=20, min_occur_num=2)
 		return keyword_res,keyphrase_res
 
-	def sentence_train(self,text,num=2,limitedlen=100):
-		self.sentence_extraction.train(text=text, lower=True, speech_tag_filter=True)
-		abstract = self.sentence_extraction.get_key_sentences(limitedlen=limitedlen)
+	def sentence_train(self,text,sentences_percent='10%'):
+		self.sentence_extraction.train(text=text, lower=True, speech_tag_filter=True,source='all_filters')
+		abstract = self.sentence_extraction.get_key_sentences(sentences_percent=sentences_percent)
 		return abstract
 
 if __name__ == '__main__':
-	text = codecs.open('./text/01.txt','r+','utf-8', 'ignore').read()
+	text = codecs.open('./text/05.txt','r+','utf-8', 'ignore').read()
 	extractor = Extractor(stop_words_file='./stopword.data')
 	keyword,keyphrase = extractor.keyword_train(text=text)
-	abstract = extractor.sentence_train(text, limitedlen=100)
+	abstract = extractor.sentence_train(text, sentences_percent='10%')
 	
 	f = codecs.open('result_for_extractor.txt','w+','utf-8')
 	
@@ -35,5 +35,5 @@ if __name__ == '__main__':
 	f.write('/'.join(keyphrase))
 
 	f.write('\nabstract:\n')
-	f.write('...'.join(abstract))
+	f.write(u'。'.join(abstract) + u'。')
 	f.close()

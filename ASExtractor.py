@@ -12,8 +12,8 @@ class ASExtractor(wx.Frame):
 	"""docstring for ASExtractors"""
 	def __init__(self, parent, title):
 		wx.Frame.__init__(self, parent, title=title, size=(800,600))
-		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE | wx.HSCROLL)
-		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE | wx.HSCROLL)
+		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE )
+		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE )
 		self.CreateStatusBar()
 		#Setting up the file menu
 		filemenu = wx.Menu()
@@ -32,30 +32,40 @@ class ASExtractor(wx.Frame):
 		menuBar.Append(filemenu,"&File")
 		menuBar.Append(moremenu,"&More")
 		self.SetMenuBar(menuBar)
+		#Set events of menu
+		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)	
+		self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
+		self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
 
 		# Creating the button
 		extractButton = wx.Button(self,label="Extract")
 		clearButton = wx.Button(self,label="Clear") 
-		text = wx.StaticText(self,label="The source article is bellow :")
-		limiteNum_label = wx.StaticText(self,-1,"限制字数:")
-		self.limiteLen = wx.TextCtrl(self,value="100")
-
-		# Set events
-		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)	
-		self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
-		self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
 		self.Bind(wx.EVT_BUTTON,self.OnExtract,extractButton)
 		self.Bind(wx.EVT_BUTTON,self.OnClear,clearButton)
 
+		article_hint = wx.StaticText(self,label="The source article is bellow :")
+
+		article_type_label = wx.StaticText(self,-1,label="文章类型:")
+		article_type_list = ['English','Chinese']
+		self.articleType = wx.ComboBox(self, size=(80, -1), choices=article_type_list, style=wx.CB_DROPDOWN)
+		self.articleType.SetSelection(0)
+
+		sentences_percent_label = wx.StaticText(self,-1,label="比例:")
+		sentences_percent_list = ['5%','10%','12%','15%','20%']
+		self.sentencesPercent = wx.ComboBox(self, size=(80, -1), choices=sentences_percent_list, style=wx.CB_DROPDOWN)
+		self.sentencesPercent.SetSelection(3) 
+
 		# Set the Layout
 		hbox = wx.BoxSizer()
-		hbox.Add(limiteNum_label,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(self.limiteLen,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(article_type_label,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(self.articleType,proportion=0,flag=wx.ALIGN_CENTER,border=8)
+		hbox.Add(sentences_percent_label,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(self.sentencesPercent,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(extractButton,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(clearButton,proportion=0,flag=wx.ALIGN_CENTER)
 
 		vbox = wx.BoxSizer(wx.VERTICAL)
-		vbox.Add(text,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
+		vbox.Add(article_hint,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
 		vbox.Add(self.sourcePage,proportion=1,flag=wx.EXPAND | wx.ALL,border=5)
 		vbox.Add(hbox,proportion=0,flag=wx.EXPAND|wx.LEFT,border=5)
 		vbox.Add(self.abstractPage,proportion=1,flag=wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT,border=5)
@@ -87,37 +97,11 @@ class ASExtractor(wx.Frame):
 	def OnExtract(self,events):
 		text = self.sourcePage.GetValue().strip()
 		if text != '':
-			#print "Click on extractButton"
-			#keyword_extraction = KeywordExtraction(stop_words_file='./stopword.data')  # 导入停止词
-			#使用词性过滤，文本小写，窗口为2
-			#keyword_extraction.train(text=text, speech_tag_filter=True, lower=True, window=2)  
-
-			#result = '关键词：\n'
-			# 20个关键词且每个的长度最小为1
-			#result +='/'.join(keyword_extraction.get_keywords(20, word_min_len=1))  
-
-			#result += '\n关键短语：\n'
-			# 20个关键词去构造短语，短语在原文本中出现次数最少为2
-			#result += '/'.join(keyword_extraction.get_keyphrases(keywords_num=20, min_occur_num= 2))  
-			    
-			#sentence_extractiorn = SentenceExtraction(stop_words_file='./stopword.data')
-
-			# 使用词性过滤，文本小写，使用words_all_filters生成句子之间的相似性
-			#sentence_extractiorn.train(text=text, speech_tag_filter=True, lower=True, source = 'all_filters')
-			#result += '\n\n摘要：\n'
-			#abstract = '\n'.join(sentence_extractiorn.get_key_sentences(limitedlen=limitelen)) # 重要性最高的三个句子
-			#print len(abstract)		
-			#result += abstract
-			limitelen = self.limiteLen.GetValue()
-			try:
-				if type(eval(limitelen)) == int:
-					limitelen = int(limitelen)
-			except Exception, e:
-				raise e	
+			sentences_percent = self.sentencesPercent.GetValue()
 			
 			extractor = Extractor(stop_words_file='./stopword.data')
 			keyword,keyphrase = extractor.keyword_train(text=text)
-			abstract = extractor.sentence_train(text, limitedlen=limitelen)
+			abstract = extractor.sentence_train(text, sentences_percent=sentences_percent)
 			
 			result = '关键词：\n' + '/'.join(keyword)
 			result += '\n关键短语：\n' + '/'.join(keyphrase)
@@ -126,12 +110,8 @@ class ASExtractor(wx.Frame):
 			self.abstractPage.SetValue(result)
 		else:
 			#test 
-			limitelen = self.limiteLen.GetValue()
-			try:
-				if type(eval(limitelen)) == int:
-					print int(limitelen)
-			except Exception, e:
-				raise e	
+			sentences_percent = self.sentencesPercent.GetValue()
+			print filter(lambda x:x.isdigit(), sentences_percent)
 			print "No article"
 
 	def OnClear(self,events):
@@ -139,6 +119,7 @@ class ASExtractor(wx.Frame):
 		self.abstractPage.SetValue('')
 		print "Clear all"
 
-app = wx.App(False)
-win = ASExtractor(None,'ASExtractor')
-app.MainLoop()
+if __name__ == '__main__':
+	app = wx.App(False)
+	win = ASExtractor(None,'ASExtractor')
+	app.MainLoop()
