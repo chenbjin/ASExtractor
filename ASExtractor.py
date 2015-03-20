@@ -121,7 +121,7 @@ class ASExtractor(wx.Frame):
 			
 			result = '关键词：\n' + '/'.join(keyword)
 			result += '\n关键短语：\n' + '/'.join(keyphrase)
-			result += '\n摘要：\n' + '...'.join(abstract)
+			result += '\n摘要：\n' + '。'.join(abstract)+r'。'
 
 			self.abstractPage.SetValue(result)
 		else:
