@@ -47,7 +47,7 @@ class ASExtractor(wx.Frame):
 
 		article_type_label = wx.StaticText(self,-1,label="文章类型:")
 		article_type_list = ['English','Chinese']
-		self.articleType = wx.ComboBox(self, size=(80, -1), choices=article_type_list, style=wx.CB_DROPDOWN)
+		self.articleType = wx.ComboBox(self, size=(100, -1), choices=article_type_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
 		self.articleType.SetSelection(0)
 
 		sentences_percent_label = wx.StaticText(self,-1,label="比例:")
@@ -55,12 +55,19 @@ class ASExtractor(wx.Frame):
 		self.sentencesPercent = wx.ComboBox(self, size=(80, -1), choices=sentences_percent_list, style=wx.CB_DROPDOWN)
 		self.sentencesPercent.SetSelection(3) 
 
+		similarity_function_label = wx.StaticText(self,-1,label="相似度函数:")
+		similarity_function_list = ['Standard','Levenshtein Distance','Vector Space Model']
+		self.similarityFunction = wx.ComboBox(self, size=(140, -1), choices=similarity_function_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+		self.similarityFunction.SetSelection(0) 
+
 		# Set the Layout
 		hbox = wx.BoxSizer()
 		hbox.Add(article_type_label,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(self.articleType,proportion=0,flag=wx.ALIGN_CENTER,border=8)
 		hbox.Add(sentences_percent_label,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(self.sentencesPercent,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(similarity_function_label,proportion=0,flag=wx.ALIGN_CENTER)
+		hbox.Add(self.similarityFunction,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(extractButton,proportion=0,flag=wx.ALIGN_CENTER)
 		hbox.Add(clearButton,proportion=0,flag=wx.ALIGN_CENTER)
 
@@ -90,7 +97,7 @@ class ASExtractor(wx.Frame):
 		self.Close(True)
 
 	def OnAbout(self,events):
-		dlg = wx.MessageDialog( self, "An Automatic Summarization program\n\nAuthor: chenbjin\nTime: 2015-03-03","About",wx.OK)
+		dlg = wx.MessageDialog( self, "An Automatic Summarization program based on TextRank\n\nAuthor: chenbjin\nTime: 2015-03-03","About",wx.OK)
 		dlg.ShowModal()
 		dlg.Destroy()
 
@@ -98,11 +105,12 @@ class ASExtractor(wx.Frame):
 		text = self.sourcePage.GetValue().strip()
 		if text != '':
 			sentences_percent = self.sentencesPercent.GetValue()
-			
-			extractor = Extractor(stop_words_file='./stopword.data')
+			similarity_function = self.similarityFunction.GetValue()
+			print similarity_function
+			extractor = Extractor(stop_words_file='./trainer/stopword_zh.data')
 			keyword,keyphrase = extractor.keyword_train(text=text)
-			abstract = extractor.sentence_train(text, sentences_percent=sentences_percent)
-			
+			abstract = extractor.sentence_train(text, sentences_percent=sentences_percent,sim_func=similarity_function)
+			 
 			result = '关键词：\n' + '/'.join(keyword)
 			result += '\n关键短语：\n' + '/'.join(keyphrase)
 			result += '\n摘要：\n' + '。'.join(abstract)+r'。'

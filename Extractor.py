@@ -15,14 +15,14 @@ class Extractor(object):
 		keyphrase_res = self.keyword_extraction.get_keyphrases(keywords_num=20, min_occur_num=2)
 		return keyword_res,keyphrase_res
 
-	def sentence_train(self,text,sentences_percent='10%'):
-		self.sentence_extraction.train(text=text, lower=True, speech_tag_filter=True,source='all_filters')
+	def sentence_train(self,text,sentences_percent='10%',sim_func='Standard'):
+		self.sentence_extraction.train(text=text, lower=True, speech_tag_filter=True,source='all_filters',sim_func=sim_func)
 		abstract = self.sentence_extraction.get_key_sentences(sentences_percent=sentences_percent)
 		return abstract
 
 if __name__ == '__main__':
 	text = codecs.open('./text/05.txt','r+','utf-8', 'ignore').read()
-	extractor = Extractor(stop_words_file='./stopword.data')
+	extractor = Extractor(stop_words_file='./trainer/stopword_zh.data')
 	keyword,keyphrase = extractor.keyword_train(text=text)
 	abstract = extractor.sentence_train(text, sentences_percent='10%')
 	

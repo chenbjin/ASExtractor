@@ -1,0 +1,1 @@
+linear constraints/natural numbers/linear diophantine equations/strict inequations/upper bounds/minimal set/minimal generating/corresponding algorithms/minimal supporting set/types systems/

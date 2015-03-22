@@ -25,7 +25,7 @@ class SentenceExtraction(object):
 		self.graph = None
 		self.key_sentences = None
 
-	def train(self, text, lower = False, speech_tag_filter = True,source = 'all_filters'):
+	def train(self, text, lower = False, speech_tag_filter = True,source = 'all_filters',sim_func='Standard'):
 		'''
 		text: 待处理文本
 		lower: 是否将文本转化为小写
@@ -48,7 +48,13 @@ class SentenceExtraction(object):
 		else:
 			source = self.words_no_stop_words
 
-		sim_function = self._get_similarity
+		if sim_func == 'Standard':
+			sim_function = self._get_similarity_standard
+		elif sim_func == 'Levenshtein Distance':
+			sim_function = self._get_similarity_ld
+		else:
+			sim_function = self._get_similarity_standard
+		
 		sentences_num = len(source)
 		self.graph = np.zeros((sentences_num,sentences_num))
 
@@ -65,7 +71,7 @@ class SentenceExtraction(object):
 		for index,_ in sorted_scores:
 			self.key_sentences.append(self.sentences[index])
 
-	def _get_similarity(self, sentence1, sentence2):
+	def _get_similarity_standard(self, sentence1, sentence2):
 		'''
 		计算句子相似度,sentence1,sentence2为待计算的两句子
 		'''
@@ -81,6 +87,21 @@ class SentenceExtraction(object):
 		if denominator == 0.:
 			return 0.
 		return num_of_common_words / denominator
+
+	def _get_similarity_ld(self,sentence1,sentence2):
+		if len(sentence1) > len(sentence2):
+			sentence1,sentence2 = sentence2, sentence1
+		distances = range(len(sentence1) + 1)
+		for index2, char2 in enumerate(sentence2):
+			newDistances = [index2 + 1]
+			for index1, char1 in enumerate(sentence1):
+				if char1 == char2:
+					newDistances.append(distances[index1])
+				else:
+					newDistances.append(1 + min((distances[index1], distances[index1+1], newDistances[-1])))
+			distances = newDistances
+		return distances[-1]
+
 
 	def get_key_sentences(self, sentences_min_len = 6, sentences_percent = '10%'):
 		'''
@@ -110,7 +131,7 @@ class SentenceExtraction(object):
 if __name__ == '__main__':
 	import codecs
 	text = codecs.open('../text/05.txt', 'r', 'utf-8').read()
-	key_sentences = SentenceExtraction(stop_words_file='../stopword.data')
+	key_sentences = SentenceExtraction(stop_words_file='../trainer/stopword_zh.data')
 	key_sentences.train(text=text, lower=True, speech_tag_filter=True, source='all_filters')
 	f = codecs.open('./result_for_keysentence.txt','w+','utf-8','ignore')
 	f.write('。'.decode('utf-8').join(key_sentences.get_key_sentences(sentences_percent = '10%'))+'。'.decode('utf-8'))
