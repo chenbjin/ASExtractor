@@ -131,7 +131,7 @@ class SentenceExtraction(object):
 if __name__ == '__main__':
 	import codecs
 	text = codecs.open('../text/05.txt', 'r', 'utf-8').read()
-	key_sentences = SentenceExtraction(stop_words_file='../trainer/stopword_zh.data')
+	key_sentences = SentenceExtraction(stop_words_file='./trainer/stopword_zh.data')
 	key_sentences.train(text=text, lower=True, speech_tag_filter=True, source='all_filters')
 	f = codecs.open('./result_for_keysentence.txt','w+','utf-8','ignore')
 	f.write('。'.decode('utf-8').join(key_sentences.get_key_sentences(sentences_percent = '10%'))+'。'.decode('utf-8'))

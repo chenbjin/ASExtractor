@@ -143,7 +143,7 @@ class Segmentation(object):
 
 if __name__ == '__main__':
 	ss = SentenceSegmentation()
-	seg = Segmentation(stop_words_file='../trainer/stopword_zh.data')
+	seg = Segmentation(stop_words_file='./trainer/stopword_zh.data')
 	text = codecs.open('../text/01.txt','r+','utf-8','ignore').read()
 	sentences, words_no_filter, words_no_stop_words, words_all_filters = seg.segment_text(text=text,lower=True,speech_tag_filter=True)
 	f = codecs.open('./result.txt','w+','utf-8','ignore')

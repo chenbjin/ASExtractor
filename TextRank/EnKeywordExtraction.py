@@ -82,8 +82,11 @@ class EnKeywordExtraction(object):
 		for index,_ in sorted_scores:
 			self.keywords.append(self.index_word[index])
 
-	def get_keyphrases(self):
-		aThird = len(self.keywords) 
+	def get_keyphrases(self, article_type='Abstract'):
+		if article_type == 'Abstract':
+			aThird = len(self.keywords)
+		elif article_type == 'Fulltext': 
+			aThird = len(self.keywords)/3 
 		keyphrases = self.keywords[0:aThird]
 		#print keyphrases
 		modifiedKeyphrases = []
@@ -133,7 +136,7 @@ class EnKeywordExtraction(object):
 if __name__ == '__main__':
 	import codecs
 	text = codecs.open('../text/008.txt','r+','utf-8','ignore').read()
-	keyword = EnKeywordExtraction(stop_words_file='../trainer/stopword_en.data')
+	keyword = EnKeywordExtraction(stop_words_file='./trainer/stopword_en.data')
 	keyword.train(text=text,with_tag_filter=True)
 
 	f = codecs.open('./result_for_keyword_en.txt','w+','utf-8','ignore')

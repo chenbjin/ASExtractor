@@ -3,7 +3,7 @@ import wx
 import os
 import codecs
 from Extractor import Extractor
-from TextRank import KeywordExtraction, SentenceExtraction
+from EnExtractor import EnExtractor
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -45,10 +45,11 @@ class ASExtractor(wx.Frame):
 
 		article_hint = wx.StaticText(self,label="The source article is bellow :")
 
-		article_type_label = wx.StaticText(self,-1,label="文章类型:")
-		article_type_list = ['English','Chinese']
-		self.articleType = wx.ComboBox(self, size=(100, -1), choices=article_type_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
-		self.articleType.SetSelection(0)
+		language_type_label = wx.StaticText(self,-1,label="语言:")
+		language_type_list = ['English','Chinese']
+		self.languageType = wx.ComboBox(self, size=(90, -1), choices=language_type_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+		self.languageType.SetSelection(0)
+		self.Bind(wx.EVT_COMBOBOX, self.OnLanguageSelected, self.languageType)
 
 		sentences_percent_label = wx.StaticText(self,-1,label="比例:")
 		sentences_percent_list = ['5%','10%','12%','15%','20%']
@@ -60,21 +61,28 @@ class ASExtractor(wx.Frame):
 		self.similarityFunction = wx.ComboBox(self, size=(140, -1), choices=similarity_function_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
 		self.similarityFunction.SetSelection(0) 
 
+		article_type_label = wx.StaticText(self,-1,label="文本类型:")
+		article_type_list = ['Fulltext','Abstract']
+		self.articleType = wx.ComboBox(self, size=(90, -1), choices=article_type_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+		self.articleType.SetSelection(0) 
+		self.Bind(wx.EVT_COMBOBOX, self.OnArticleSelected, self.articleType)
 		# Set the Layout
-		hbox = wx.BoxSizer()
-		hbox.Add(article_type_label,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(self.articleType,proportion=0,flag=wx.ALIGN_CENTER,border=8)
-		hbox.Add(sentences_percent_label,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(self.sentencesPercent,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(similarity_function_label,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(self.similarityFunction,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(extractButton,proportion=0,flag=wx.ALIGN_CENTER)
-		hbox.Add(clearButton,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox = wx.BoxSizer()
+		self.hbox.Add(language_type_label,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(self.languageType,proportion=0,flag=wx.ALIGN_CENTER,border=8)
+		self.hbox.Add(article_type_label,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(self.articleType,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(sentences_percent_label,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(self.sentencesPercent,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(similarity_function_label,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(self.similarityFunction,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(extractButton,proportion=0,flag=wx.ALIGN_CENTER)
+		self.hbox.Add(clearButton,proportion=0,flag=wx.ALIGN_CENTER)
 
 		vbox = wx.BoxSizer(wx.VERTICAL)
 		vbox.Add(article_hint,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
 		vbox.Add(self.sourcePage,proportion=1,flag=wx.EXPAND | wx.ALL,border=5)
-		vbox.Add(hbox,proportion=0,flag=wx.EXPAND|wx.LEFT,border=5)
+		vbox.Add(self.hbox,proportion=0,flag=wx.EXPAND|wx.LEFT,border=5)
 		vbox.Add(self.abstractPage,proportion=1,flag=wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT,border=5)
 
 		self.SetSizer(vbox)
@@ -101,25 +109,55 @@ class ASExtractor(wx.Frame):
 		dlg.ShowModal()
 		dlg.Destroy()
 
+	def OnLanguageSelected(self,events):
+		#print self.languageType.GetSelection()
+		lang = self.languageType.GetSelection()
+		if lang == 1:
+			self.articleType.Enable(False)
+			self.sentencesPercent.Enable(True)
+		else:
+			self.articleType.Enable(True)
+
+	def OnArticleSelected(self,events):
+		lang = self.languageType.GetSelection()
+		art = self.articleType.GetSelection()
+		if lang == 0 and art == 1:
+			self.sentencesPercent.Enable(False)
+		else:
+			self.sentencesPercent.Enable(True)
+	
 	def OnExtract(self,events):
 		text = self.sourcePage.GetValue().strip()
 		if text != '':
-			sentences_percent = self.sentencesPercent.GetValue()
-			similarity_function = self.similarityFunction.GetValue()
-			print similarity_function
-			extractor = Extractor(stop_words_file='./trainer/stopword_zh.data')
-			keyword,keyphrase = extractor.keyword_train(text=text)
-			abstract = extractor.sentence_train(text, sentences_percent=sentences_percent,sim_func=similarity_function)
-			 
-			result = '关键词：\n' + '/'.join(keyword)
-			result += '\n关键短语：\n' + '/'.join(keyphrase)
-			result += '\n摘要：\n' + '。'.join(abstract)+r'。'
-
-			self.abstractPage.SetValue(result)
+			if self.languageType.GetSelection() == 1:
+				sentences_percent = self.sentencesPercent.GetValue()
+				similarity_function = self.similarityFunction.GetValue()
+				print similarity_function
+				extractor = Extractor(stop_words_file='./TextRank/trainer/stopword_zh.data')
+				keyword,keyphrase = extractor.keyword_train(text=text)
+				abstract = extractor.sentence_train(text, sentences_percent=sentences_percent,sim_func=similarity_function)
+				 
+				result = '关键词：\n' + '/'.join(keyword)
+				result += '\n关键短语：\n' + '/'.join(keyphrase)
+				result += '\n摘要：\n' + '。'.join(abstract)+r'。'
+			else :
+				art_type = self.articleType.GetSelection()
+				extractor = EnExtractor(stop_words_file='./TextRank/trainer/stopword_en.data')
+				if art_type == 1:
+					keyphrase = extractor.keyphrase_train(text,article_type='Abstract')
+					result = 'Keyphrases:\n'+'/'.join(keyphrase)
+				else:
+					sentences_percent = self.sentencesPercent.GetValue()
+					similarity_function = self.similarityFunction.GetValue()
+					keyphrase = extractor.keyphrase_train(text,article_type='Fulltext')
+					summary = extractor.summary_train(text,sentences_percent = sentences_percent,sim_func=similarity_function)
+					result = 'Keyphrases:\n' + '/'.join(keyphrase)
+					result += '\n\nAbstract:\n' + ''.join(summary)
+			self.abstractPage.SetValue(result)		
 		else:
 			#test 
-			sentences_percent = self.sentencesPercent.GetValue()
-			print filter(lambda x:x.isdigit(), sentences_percent)
+			#sentences_percent = self.sentencesPercent.GetValue()
+			#print filter(lambda x:x.isdigit(), sentences_percent)
 			print "No article"
 
 	def OnClear(self,events):

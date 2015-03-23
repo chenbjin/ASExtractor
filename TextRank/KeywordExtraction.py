@@ -159,7 +159,7 @@ class KeywordExtraction(object):
 if __name__ == '__main__':
 	import codecs
 	text = codecs.open('../text/02.txt','r+','utf-8','ignore').read()
-	keyword = KeywordExtraction(stop_words_file='../stopword.data')
+	keyword = KeywordExtraction(stop_words_file='./trainer/stopword_zh.data')
 	keyword.train(text=text, speech_tag_filter=True)
 
 	f = codecs.open('./result_for_keyword.txt','w+','utf-8','ignore')

@@ -22,7 +22,7 @@ class Extractor(object):
 
 if __name__ == '__main__':
 	text = codecs.open('./text/05.txt','r+','utf-8', 'ignore').read()
-	extractor = Extractor(stop_words_file='./trainer/stopword_zh.data')
+	extractor = Extractor(stop_words_file='./TextRank/trainer/stopword_zh.data')
 	keyword,keyphrase = extractor.keyword_train(text=text)
 	abstract = extractor.sentence_train(text, sentences_percent='10%')
 	

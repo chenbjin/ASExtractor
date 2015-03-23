@@ -1,6 +1,7 @@
 #-*- encoding:utf-8 -*-
 import nltk
 import networkx as nx
+import os
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -44,7 +45,7 @@ class EnWordSegmentation(object):
 	
 	def _split_sentences(self, text):
 		#return nltk.sent_tokenize(text)
-		tokenizer = nltk.data.load('file:'  + '../trainer/english.pickle')
+		tokenizer = nltk.data.load('file:'  + os.path.dirname(os.path.abspath(__file__))+ '/trainer/english.pickle')
 		return tokenizer.tokenize(text)
 
 	def sentence2word(self, sentences, lower = True, with_stop_words = True, with_tag_filter = False):
@@ -82,10 +83,10 @@ class EnSegmentation(object):
 		
 		
 if __name__ == '__main__':
-	extraction = EnSegmentation(stop_words_file='../trainer/stopword_en.data')
+	extraction = EnSegmentation(stop_words_file='./trainer/stopword_en.data')
 
 	text = open('../text/008.txt','r+').read()
 	#text = "Good morning, my friends. I will finish my job this morning."
 	sentence,words_no_filter,words_no_stop_words,words_all_filters = extraction.segment(text)
-	print words_no_stop_words , words_all_filters
+	print sentence
 	
