@@ -29,7 +29,7 @@ class EnKeywordExtraction(object):
 			for res in result:
 				yield res
 
-	def train(self, text, window = 2, lower = True, with_tag_filter = True, vertex_source = 'all_filters', edge_source = 'no_stop_words'):
+	def train(self, text, window = 2, lower = False, with_tag_filter = True, vertex_source = 'all_filters', edge_source = 'no_stop_words'):
 		self.text = text
 		(_, 
 		self.words_no_filter, 
@@ -107,7 +107,8 @@ class EnKeywordExtraction(object):
 					if firstWord in keyphrases and secondWord in keyphrases and thirdWord in keyphrases:
 						keyphrase = firstWord + ' ' + secondWord + ' '+ thirdWord
 						#print '1:',keyphrase
-						modifiedKeyphrases.append(keyphrase)
+						if keyphrase not in modifiedKeyphrases:
+							modifiedKeyphrases.append(keyphrase)
 						dealtWith.add(firstWord)
 						dealtWith.add(secondWord)
 						dealtWith.add(thirdWord)
@@ -116,34 +117,42 @@ class EnKeywordExtraction(object):
 					elif firstWord in keyphrases and secondWord in keyphrases:
 						keyphrase = firstWord + ' ' + secondWord
 						#print '2:',keyphrase
-						modifiedKeyphrases.append(keyphrase)
+						if keyphrase not in modifiedKeyphrases:
+							modifiedKeyphrases.append(keyphrase)
 						dealtWith.add(firstWord)
 						dealtWith.add(secondWord)
 						i = i + 1
 						j = j + 1
 						continue
 				elif firstWord in keyphrases and secondWord in keyphrases:
-						keyphrase = firstWord + ' ' + secondWord
-						#print '3:',keyphrase
+					keyphrase = firstWord + ' ' + secondWord
+					#print '3:',keyphrase
+					if keyphrase not in modifiedKeyphrases:
 						modifiedKeyphrases.append(keyphrase)
-						dealtWith.add(firstWord)
-						dealtWith.add(secondWord)
+					dealtWith.add(firstWord)
+					dealtWith.add(secondWord)
+				else:
+					if firstWord in keyphrases and firstWord not in dealtWith: 
+						modifiedKeyphrases.append(firstWord)
+					if j == len(textlist)-1 and secondWord in keyphrases and secondWord not in dealtWith:
+						modifiedKeyphrases.append(secondWord)
 				i = i + 1
 				j = j + 1
 		return modifiedKeyphrases
 
+	def get_tag(self,text):
+		return self.seg.get_tag_text(text)
+
 
 if __name__ == '__main__':
-	import codecs
-	text = codecs.open('../text/008.txt','r+','utf-8','ignore').read()
+
+	text = open('../text/007.txt','r+').read()
 	keyword = EnKeywordExtraction(stop_words_file='./trainer/stopword_en.data')
 	keyword.train(text=text,with_tag_filter=True)
 
-	f = codecs.open('./result_for_keyword_en.txt','w+','utf-8','ignore')
-
-	for phrase in keyword.get_keyphrases():
-		f.write(phrase+'/')
-	f.close()
-
-	#for w in keyword.keywords:
-	#	print w
+	#print keyword.keywords
+	print keyword.get_keyphrases()
+	word_tag =  keyword.get_tag(text)
+	for w in word_tag:
+		if w[1] == 'VBN':
+			print w

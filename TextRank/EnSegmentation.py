@@ -11,7 +11,7 @@ class EnWordSegmentation(object):
 	def __init__(self, stop_words_file=None, tag=['NN','JJ','NNP','NNS','NNPS']):
 		super(EnWordSegmentation, self).__init__()
 		self.speech_tag_filter = tag
-		self.stop_tokens = ",.?!:'\"/\\#%^&*()_+-={}[]"
+		self.stop_tokens = ",.?!:\"/\\#%^&*()_+-={}[]"
 		self.stop_words = set()
 
 		if type(stop_words_file) is str:
@@ -25,23 +25,23 @@ class EnWordSegmentation(object):
 		word_tagged = nltk.pos_tag(word_tokens)
 		#print word_tagged
 		if with_tag_filter:
-			word_tagged = [word[0] for word in word_tagged if word[1] in self.speech_tag_filter]
+			result = [word[0] for word in word_tagged if word[1] in self.speech_tag_filter]
 		else:
-			word_tagged = [word[0] for word in word_tagged]
+			result= [word[0] for word in word_tagged]
 
 		if lower:
-			word_tagged = [word.lower() for word in word_tagged]
+			result = [word.lower() for word in result]
 
 		if with_stop_words:
-			word_tagged = [word.strip() for word in word_tagged 
+			result = [word.strip() for word in result 
 							if word.strip() not in self.stop_words
 							and word.strip() not in self.stop_tokens
 							and len(word.strip()) > 0]
 		else:
-			word_tagged = [word.strip() for word in word_tagged 
+			result = [word.strip() for word in result 
 							if word.strip() not in self.stop_tokens
 							and len(word.strip()) > 0]
-		return word_tagged
+		return result
 	
 	def _split_sentences(self, text):
 		#return nltk.sent_tokenize(text)
@@ -81,7 +81,11 @@ class EnSegmentation(object):
 																	with_tag_filter=True)
 		return sentences,words_no_filter,words_no_stop_words,words_all_filters
 		
-		
+	def get_tag_text(self,text):
+		word_tokens = nltk.word_tokenize(text)
+		word_tagged = nltk.pos_tag(word_tokens)
+		return word_tagged
+
 if __name__ == '__main__':
 	extraction = EnSegmentation(stop_words_file='./trainer/stopword_en.data')
 
