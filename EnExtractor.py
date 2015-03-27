@@ -3,15 +3,15 @@ from TextRank import EnKeywordExtraction, EnSentenceExtraction
 
 class EnExtractor(object):
 	"""docstring for EnExtractor"""
-	def __init__(self, stop_words_file = None):
+	def __init__(self, stop_words_file = './TextRank/trainer/stopword_en.data'):
 		super(EnExtractor, self).__init__()
 		self.keyphrase_extraction = EnKeywordExtraction(stop_words_file=stop_words_file)
 		self.summary_extraction = EnSentenceExtraction(stop_words_file=stop_words_file)
 
-	def keyphrase_train(self,text,article_type='Fulltext'):
-		self.keyphrase_extraction.train(text=text)
-		keyphrase = self.keyphrase_extraction.get_keyphrases(article_type=article_type)
-		print self.get_tag(text)
+	def keyphrase_train(self,text,article_type='Abstract'):
+		self.keyphrase_extraction.train(text=text,lower=True)
+		keyphrase = self.keyphrase_extraction.get_keyphrases_maximal(article_type=article_type)
+		#print self.get_tag(text)
 		return keyphrase
 
 	def summary_train(self,text,sentences_percent='10%', sim_func='Standard'):

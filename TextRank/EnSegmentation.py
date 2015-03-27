@@ -11,13 +11,14 @@ class EnWordSegmentation(object):
 	def __init__(self, stop_words_file=None, tag=['NN','JJ','NNP','NNS','NNPS']):
 		super(EnWordSegmentation, self).__init__()
 		self.speech_tag_filter = tag
-		self.stop_tokens = ",.?!:\"/\\#%^&*()_+-={}[]"
+		#self.stop_tokens = ",.?!:'\"/\\#%^&*()_+-={}[]"
+		self.stop_tokens = ",.?!:'\"/\\#%^&*_+-=(){}[]"
 		self.stop_words = set()
 
 		if type(stop_words_file) is str:
 			for word in open(stop_words_file):
-				self.stop_words.add(word)
-		#print len(self.stop_words)
+				self.stop_words.add(word.strip())
+		#print self.stop_words
 
 	def _split_words(self, text, lower = True, with_stop_words = False,with_tag_filter = False):
 		word_tokens = nltk.word_tokenize(text)
@@ -38,9 +39,10 @@ class EnWordSegmentation(object):
 							and word.strip() not in self.stop_tokens
 							and len(word.strip()) > 0]
 		else:
-			result = [word.strip() for word in result 
-							if word.strip() not in self.stop_tokens
-							and len(word.strip()) > 0]
+			#result = [word.strip() for word in result 
+			#				if word.strip() not in self.stop_tokens
+			#				and len(word.strip()) > 0]
+			result = [word.strip() for word in result if len(word.strip()) > 0]
 		return result
 	
 	def _split_sentences(self, text):
@@ -65,7 +67,7 @@ class EnSegmentation(object):
 		super(EnSegmentation, self).__init__()
 		self.word_segmentation = EnWordSegmentation(stop_words_file)
 
-	def segment(self,text,lower=True,with_tag_filter=True):
+	def segment(self,text,lower=False,with_tag_filter=True):
 		sentences = self.word_segmentation._split_sentences(text)
 		words_no_filter = self.word_segmentation.sentence2word(	sentences=sentences, 
 																lower=lower, 
@@ -89,8 +91,11 @@ class EnSegmentation(object):
 if __name__ == '__main__':
 	extraction = EnSegmentation(stop_words_file='./trainer/stopword_en.data')
 
-	text = open('../text/008.txt','r+').read()
+	text = open('../text/007.txt','r+').read()
 	#text = "Good morning, my friends. I will finish my job this morning."
 	sentence,words_no_filter,words_no_stop_words,words_all_filters = extraction.segment(text)
-	print sentence
+	#print sentence
+	#print words_no_filter
+	#print words_no_stop_words
+	#print words_all_filters
 	

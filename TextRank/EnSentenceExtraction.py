@@ -82,7 +82,7 @@ class EnSentenceExtraction(object):
 			distances = newDistances
 		return distances[-1]
 
-	def get_key_sentences(self,sentences_percent='10%'):
+	def get_key_sentences(self,sentences_percent='100%'):
 		result = []
 		sentences_percent = filter(lambda x:x.isdigit(), sentences_percent)
 		sentences_num = (len(self.sentences) * int(sentences_percent) )/ 100
@@ -93,7 +93,7 @@ class EnSentenceExtraction(object):
 		return result
 
 if __name__ == '__main__':
-	text = open('../../000.txt', 'r').read()
+	text = open('../../001.txt', 'r').read()
 	senExtrac = EnSentenceExtraction(stop_words_file='./trainer/stopword_en.data')
 	senExtrac.train(text=text, lower=True, with_tag_filter=True, source='all_filters')
 	print senExtrac.get_key_sentences()

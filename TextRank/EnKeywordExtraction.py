@@ -12,11 +12,15 @@ class EnKeywordExtraction(object):
 	def __init__(self, stop_words_file=None):
 		super(EnKeywordExtraction, self).__init__()
 		self.text = ''
+		self.tag_text = None
 		self.keywords = []
 		self.seg = EnSegmentation(stop_words_file=stop_words_file) 
 		self.word_index = {}
 		self.index_word = {}
 		self.graph = None
+		self.words_no_filter = None
+		self.words_no_stop_words = None 
+		self.words_all_filters = None
 
 	def combine(self, word_list,window = 2):
 		if window < 2:  
@@ -35,6 +39,7 @@ class EnKeywordExtraction(object):
 		self.words_no_filter, 
 		self.words_no_stop_words, 
 		self.words_all_filters) = self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
+		self.tag_text = self.get_tag(text)
 
 		if vertex_source == 'no_filter':
 			vertex_source = self.words_no_filter
@@ -86,14 +91,15 @@ class EnKeywordExtraction(object):
 		if article_type == 'Abstract':
 			aThird = len(self.keywords)
 		elif article_type == 'Fulltext': 
-			aThird = len(self.keywords)/3 
+			aThird = len(self.keywords)/3
 		keyphrases = self.keywords[0:aThird]
 		#print keyphrases
 		modifiedKeyphrases = []
 		dealtWith = set([]) #keeps track of individual keywords that have been joined to form a keyphrase
 
-		textlist = self.words_no_filter
+		#textlist = self.words_no_filter
 		#print self.words_no_filter
+		
 		for textlist in self.words_no_filter:
 			i = 0
 			j = 1
@@ -116,7 +122,7 @@ class EnKeywordExtraction(object):
 						j = j+2
 					elif firstWord in keyphrases and secondWord in keyphrases:
 						keyphrase = firstWord + ' ' + secondWord
-						#print '2:',keyphrase
+						#print '2:',keyphrase 
 						if keyphrase not in modifiedKeyphrases:
 							modifiedKeyphrases.append(keyphrase)
 						dealtWith.add(firstWord)
@@ -129,15 +135,56 @@ class EnKeywordExtraction(object):
 					#print '3:',keyphrase
 					if keyphrase not in modifiedKeyphrases:
 						modifiedKeyphrases.append(keyphrase)
-					dealtWith.add(firstWord)
-					dealtWith.add(secondWord)
+						dealtWith.add(firstWord)
+						dealtWith.add(secondWord)
 				else:
-					if firstWord in keyphrases and firstWord not in dealtWith: 
-						modifiedKeyphrases.append(firstWord)
+					if firstWord in keyphrases and firstWord not in dealtWith :
+						#for w in self.tag_text:
+						# 	if w[0] == firstWord and w[1] == 'NNP' and firstWord not in modifiedKeyphrases:
+						if firstWord not in modifiedKeyphrases:
+							modifiedKeyphrases.append(firstWord)
+							dealtWith.add(firstWord)
+						
 					if j == len(textlist)-1 and secondWord in keyphrases and secondWord not in dealtWith:
-						modifiedKeyphrases.append(secondWord)
+						#for w in self.tag_text:
+						# 	if w[0] == secondWord and w[1] == 'NNP' and secondWord not in modifiedKeyphrases:
+						 		#print secondWord
+						 if secondWord not in modifiedKeyphrases:
+							modifiedKeyphrases.append(secondWord)
+							dealtWith.add(secondWord)					
 				i = i + 1
 				j = j + 1
+		return modifiedKeyphrases
+
+	def get_keyphrases_maximal(self,article_type='Abstract'):
+		if article_type == 'Abstract':
+			aThird = len(self.keywords)/3
+		elif article_type == 'Fulltext': 
+			aThird = len(self.keywords)/3
+		keyphrases = self.keywords[0:aThird]
+		#print keyphrases
+		#print self.words_no_filter
+		modifiedKeyphrases = []
+		dealtWith = set([]) #keeps track of individual keywords that have been joined to form a keyphrase
+		for textlist in self.words_no_filter:
+			i = 0 
+			while i < len(textlist):
+				firstWord = textlist[i]
+				if firstWord in keyphrases:
+					phrase = firstWord
+					j = i+1
+					while j < len(textlist):
+						if textlist[j] in keyphrases:
+							phrase += ' '+textlist[j]
+							j += 1
+						else:
+							break
+					if phrase not in modifiedKeyphrases and j-i>1:   #bigram
+						modifiedKeyphrases.append(phrase)
+					i = j+1
+				else:
+					i += 1
+		#num = len(self.keywords)/3
 		return modifiedKeyphrases
 
 	def get_tag(self,text):
@@ -151,8 +198,9 @@ if __name__ == '__main__':
 	keyword.train(text=text,with_tag_filter=True)
 
 	#print keyword.keywords
-	print keyword.get_keyphrases()
-	word_tag =  keyword.get_tag(text)
-	for w in word_tag:
-		if w[1] == 'VBN':
-			print w
+	print keyword.get_keyphrases_maximal()
+	#word_tag =  keyword.get_tag(text)
+	#print word_tag
+	#for w in word_tag:
+	#	if w[1] == 'VBN':
+	#		print w
