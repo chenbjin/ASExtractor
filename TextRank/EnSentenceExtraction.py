@@ -19,7 +19,14 @@ class EnSentenceExtraction(object):
 
 	def train(self,text,lower=False, with_tag_filter=True,source='all_filters',sim_func='Standard'):
 		self.key_sentences = []
-		(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
+		#(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
+		#'''test
+		self.sentences = text
+		self.words_all_filters = self.seg.word_segmentation.sentence2word(sentences=self.sentences, 
+																			lower=lower, 
+																			with_stop_words=True, 
+																			with_tag_filter=True)
+		#'''
 
 		if source == 'all_filters':
 			source = self.words_all_filters
@@ -39,6 +46,7 @@ class EnSentenceExtraction(object):
 		for x in xrange(sentences_num):
 			for y in xrange(x,sentences_num):
 				similarity = sim_function(source[x],source[y])
+				#print similarity
 				self.graph[x,y] = similarity
 				self.graph[y,x] = similarity
 
@@ -47,9 +55,12 @@ class EnSentenceExtraction(object):
 		scores = nx.pagerank(nx_graph)
 		sorted_scores = sorted(scores.items(),key = lambda item: item[1],reverse=True)
 		#print sorted_scores
+		#totol_score = 0
 
-		for index,_ in sorted_scores:
+		for index, score in sorted_scores:
 			self.key_sentences.append(self.sentences[index])
+			#totol_score += score
+		#print totol_score
 
 	def _get_similarity_standard(self, sentence1, sentence2):
 		'''
@@ -66,7 +77,7 @@ class EnSentenceExtraction(object):
 		denominator = math.log(float(len(sentence1))) + math.log(float(len(sentence2)))
 		if denominator == 0.:
 			return 0.
-		return num_of_common_words / denominator
+		return num_of_common_words / denominator*1.0
 
 	def _get_similarity_ld(self,sentence1,sentence2):
 		if len(sentence1) > len(sentence2):
@@ -82,7 +93,7 @@ class EnSentenceExtraction(object):
 			distances = newDistances
 		return distances[-1]
 
-	def get_key_sentences(self,sentences_percent='100%'):
+	def get_key_sentences(self,sentences_percent='20%',num=None):
 		result = []
 		sentences_percent = filter(lambda x:x.isdigit(), sentences_percent)
 		sentences_num = (len(self.sentences) * int(sentences_percent) )/ 100
@@ -92,8 +103,20 @@ class EnSentenceExtraction(object):
 		result = self.key_sentences[:sentences_num]
 		return result
 
+	def get_key_sentences_100w(self,num=100):
+		result = []
+		lennum = 0
+		for sen in self.key_sentences:
+			#print len(sen.split())
+			if lennum > num:
+				break
+			else :
+				lennum += len(sen.split())
+				result.append(sen)
+		return result
+
 if __name__ == '__main__':
-	text = open('../../001.txt', 'r').read()
+	text = open('../../001.txt', 'r').readlines()
 	senExtrac = EnSentenceExtraction(stop_words_file='./trainer/stopword_en.data')
 	senExtrac.train(text=text, lower=True, with_tag_filter=True, source='all_filters')
-	print senExtrac.get_key_sentences()
+	print senExtrac.get_key_sentences_100w()

@@ -82,7 +82,7 @@ class EnSegmentation(object):
 																	with_stop_words=True,
 																	with_tag_filter=True)
 		return sentences,words_no_filter,words_no_stop_words,words_all_filters
-		
+
 	def get_tag_text(self,text):
 		word_tokens = nltk.word_tokenize(text)
 		word_tagged = nltk.pos_tag(word_tokens)

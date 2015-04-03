@@ -14,9 +14,9 @@ class EnExtractor(object):
 		#print self.get_tag(text)
 		return keyphrase
 
-	def summary_train(self,text,sentences_percent='10%', sim_func='Standard'):
+	def summary_train(self,text,sentences_percent='10%', sim_func='Standard',num=100):
 		self.summary_extraction.train(text=text, sim_func=sim_func)
-		summary = self.summary_extraction.get_key_sentences(sentences_percent=sentences_percent)
+		summary = self.summary_extraction.get_key_sentences_100w()
 		return summary
 
 	def get_tag(self,text):
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	#text = """"""
 	extractor = EnExtractor(stop_words_file='./TextRank/trainer/stopword_en.data')
 	keyphrase = extractor.keyphrase_train(text=text)
-	summary = extractor.summary_train(text, sentences_percent='10%')
+	summary = extractor.summary_train(text)
 	print keyphrase
 	print"--------------------"
 	print summary
