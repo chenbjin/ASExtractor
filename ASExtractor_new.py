@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 import wx
+import wx.py.images
 import os
 import codecs
 from Extractor import Extractor
@@ -12,41 +13,33 @@ class ASExtractor(wx.Frame):
 	"""docstring for ASExtractors"""
 	def __init__(self, parent, title):
 		wx.Frame.__init__(self, parent, title=title, size=(800,600))
-		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE)
-		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE )
-		self.CreateStatusBar()
-		#Setting up the file menu
-		openmenu = wx.Menu()
-		menuOpen = openmenu.Append(wx.ID_OPEN,"&Open"," Open new file")
-	
-		#filemenu.AppendSeparator()
-		savemenu = wx.Menu()
-		menuSave = savemenu.Append(wx.ID_EXIT,"E&xit"," Terminate the progqram")
-		
-		# Setting up the more menu
-		moremenu = wx.Menu()
-		menuAbout = moremenu.Append(wx.ID_ABOUT,"&About"," Information about this program")
- 		
- 		# Creating the menubar.
-		menuBar = wx.MenuBar()
-		menuBar.Append(openmenu,"&Open")
-		menuBar.Append(savemenu,"&Save")
-		menuBar.Append(moremenu,"&More")
-		self.SetMenuBar(menuBar)
-		#Set events of menu
-		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)	
-		self.Bind(wx.EVT_MENU, self.OnExit, menuSave)
-		self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
+		self.InitUI()
+		self.Center()
+		self.Show()
 
-		# Creating the button
+	def InitUI(self):
+		#状态栏
+		self.CreateStatusBar()		
+		#工具栏
+		toolbar = self.CreateToolBar()
+		for each in self.toolbarData():
+			self.addtool(toolbar, *each)
+			toolbar.AddSeparator()
+			toolbar.Realize() 
+		#源文件/摘要/关键词 展示区
+		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,250))
+		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,120))
+		self.keywordPage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,90))
+		#提示条
+		article_hint = wx.StaticText(self,label="源文档内容:")
+		abstract_hint = wx.StaticText(self,label="摘要:")
+		keyword_hint = wx.StaticText(self,label="关键词:")
+
+		# 按钮
 		extractButton = wx.Button(self,label="Extract")
 		clearButton = wx.Button(self,label="Clear") 
 		self.Bind(wx.EVT_BUTTON,self.OnExtract,extractButton)
 		self.Bind(wx.EVT_BUTTON,self.OnClear,clearButton)
-
-		article_hint = wx.StaticText(self,label="源文档内容:")
-		abstract_hint = wx.StaticText(self,label="摘要:")
-		keyword_hint = wx.StaticText(self,label="关键词:")
 
 		language_type_label = wx.StaticText(self,-1,label="语言:")
 		language_type_list = ['English','Chinese']
@@ -60,7 +53,7 @@ class ASExtractor(wx.Frame):
 		self.sentencesPercent.SetSelection(3) 
 
 		similarity_function_label = wx.StaticText(self,-1,label="相似度函数:")
-		similarity_function_list = ['Standard','Levenshtein Distance','Vector Space Model']
+		similarity_function_list = ['Standard','Levenshtein Distance','Other']
 		self.similarityFunction = wx.ComboBox(self, size=(140, -1), choices=similarity_function_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
 		self.similarityFunction.SetSelection(0) 
 
@@ -85,17 +78,48 @@ class ASExtractor(wx.Frame):
 		vbox = wx.BoxSizer(wx.VERTICAL)
 		vbox.Add(self.hbox,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
 		vbox.Add(article_hint,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
-		vbox.Add(self.sourcePage,proportion=1,flag=wx.EXPAND | wx.ALL,border=5)
+		vbox.Add(self.sourcePage,proportion=0,flag=wx.EXPAND | wx.ALL,border=5)
 		vbox.Add(abstract_hint,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
-		vbox.Add(self.abstractPage,proportion=1,flag=wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT,border=5)
+		vbox.Add(self.abstractPage,proportion=0,flag=wx.EXPAND|wx.ALL,border=5)
 		vbox.Add(keyword_hint,proportion=0,flag=wx.EXPAND|wx.LEFT,border=8)
-		
+		vbox.Add(self.keywordPage,proportion=0,flag=wx.EXPAND|wx.ALL,border=5)
 		self.SetSizer(vbox)
-		self.Center()
-		self.Show(True)
-	
-	def OnOpen(self,events):
-		self.dirname = ''
+
+	def addmenu():
+		openmenu = wx.Menu()
+		menuOpen = openmenu.Append(wx.ID_OPEN,"&Open"," Open new file")
+		#filemenu.AppendSeparator()
+		savemenu = wx.Menu()
+		menuSave = savemenu.Append(wx.ID_Exit,"E&xit"," Terminate the progqram")	
+		# Setting up the more menu
+		moremenu = wx.Menu()
+		menuAbout = moremenu.Append(wx.ID_ABOUT,"&About"," Information about this program")	
+ 		# Creating the menubar.
+		menuBar = wx.MenuBar()
+		menuBar.Append(openmenu,"&Open")
+		menuBar.Append(savemenu,"&Save")
+		menuBar.Append(moremenu,"&More")
+		self.SetMenuBar(menuBar)
+		#Set events of menu
+		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)	
+		self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
+		self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
+
+	def addtool(self,toolbar,label,imgname,helpword,handler):
+		if not label:
+			toolbar.AddSeparator()
+			return
+		bmp = wx.Image(imgname,wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+		tool = toolbar.AddSimpleTool(wx.NewId(),bmp,label,helpword)
+		self.Bind(wx.EVT_MENU,handler,tool)
+
+  	def toolbarData(self):
+  		return (("Open", "./images/open.png", "Open existing file",self.OnOpen),
+  			("Save", "./images/save.png", "Save abstract to file",self.OnSave),
+  			("About", "./images/about.png", "Create new sketch",self.OnAbout))
+    
+   	def OnOpen(self,events):
+   		self.dirname = ''
 		dlg = wx.FileDialog( self, "Choose a file",self.dirname, "", "*.*",wx.OPEN)
 		if 	dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
@@ -106,7 +130,7 @@ class ASExtractor(wx.Frame):
 			f.close()
 		dlg.Destroy()
 
-	def OnExit(self,events):
+	def OnSave(self,events):
 		self.Close(True)
 
 	def OnAbout(self,events):
@@ -133,6 +157,8 @@ class ASExtractor(wx.Frame):
 	
 	def OnExtract(self,events):
 		text = self.sourcePage.GetValue().strip()
+		keyword_result=''
+		result = ''
 		if text != '':
 			if self.languageType.GetSelection() == 1:
 				sentences_percent = self.sentencesPercent.GetValue()
@@ -142,23 +168,24 @@ class ASExtractor(wx.Frame):
 				keyword,keyphrase = extractor.keyword_train(text=text)
 				abstract = extractor.sentence_train(text, sentences_percent=sentences_percent,sim_func=similarity_function)
 				 
-				result = '关键词：\n' + '/'.join(keyword)
-				result += '\n关键短语：\n' + '/'.join(keyphrase)
-				result += '\n摘要：\n' + '。'.join(abstract)+r'。'
+				keyword_result = '/'.join(keyword)
+				keyword_result += '\n关键短语：\n' + '/'.join(keyphrase)
+				result += '。'.join(abstract)+r'。'
 			else :
 				art_type = self.articleType.GetSelection()
 				extractor = EnExtractor(stop_words_file='./TextRank/trainer/stopword_en.data')
 				if art_type == 1:
 					keyphrase = extractor.keyphrase_train(text,article_type='Abstract')
-					result = 'Keyphrases:\n'+'/'.join(keyphrase)
+					keyword_result = 'Keyphrases:\n'+'/'.join(keyphrase)
 				else:
 					sentences_percent = self.sentencesPercent.GetValue()
 					similarity_function = self.similarityFunction.GetValue()
 					keyphrase = extractor.keyphrase_train(text,article_type='Fulltext')
 					summary = extractor.summary_train(text,sentences_percent = sentences_percent,sim_func=similarity_function)
-					result = 'Keyphrases:\n' + '/'.join(keyphrase)
-					result += '\n\nAbstract:\n' + ''.join(summary)
-			self.abstractPage.SetValue(result)		
+					keyword_result = 'Keyphrases:\n' + '/'.join(keyphrase)
+					result += '   '+''.join(summary)
+			self.abstractPage.SetValue(result)
+			self.keywordPage.SetValue(keyword_result)	
 		else:
 			#test 
 			#sentences_percent = self.sentencesPercent.GetValue()
@@ -169,8 +196,9 @@ class ASExtractor(wx.Frame):
 		self.sourcePage.SetValue('')
 		self.abstractPage.SetValue('')
 		print "Clear all"
+            
 
 if __name__ == '__main__':
 	app = wx.App(False)
-	win = ASExtractor(None,'ASExtractor')
+	win = ASExtractor(None,'自动文档摘要系统')
 	app.MainLoop()

@@ -48,7 +48,7 @@ class EnWordSegmentation(object):
 	def _split_sentences(self, text):
 		#return nltk.sent_tokenize(text)
 		tokenizer = nltk.data.load('file:'  + os.path.dirname(os.path.abspath(__file__))+ '/trainer/english.pickle')
-		return tokenizer.tokenize(text)
+		return tokenizer.tokenize(text.strip())
 
 	def sentence2word(self, sentences, lower = True, with_stop_words = True, with_tag_filter = False):
 		result = []
