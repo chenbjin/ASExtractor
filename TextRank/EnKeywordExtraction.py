@@ -1,6 +1,8 @@
 #-*- encoding:utf-8 -*-
 import networkx as nx
 import numpy as np
+import collections
+import re
 from EnSegmentation import EnSegmentation
 
 import sys
@@ -21,6 +23,8 @@ class EnKeywordExtraction(object):
 		self.words_no_filter = None
 		self.words_no_stop_words = None 
 		self.words_all_filters = None
+		self.firstSen = []
+		self.counter = None
 
 	def combine(self, word_list,window = 2):
 		if window < 2:  
@@ -41,6 +45,9 @@ class EnKeywordExtraction(object):
 		self.words_all_filters) = self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
 		self.tag_text = self.get_tag(text)
 
+		self.firstSen = self.words_no_stop_words[0]
+		self.counter = collections.Counter(re.findall( '\w+' ,self.text))
+
 		if vertex_source == 'no_filter':
 			vertex_source = self.words_no_filter
 		elif vertex_source == 'no_stop_words':
@@ -58,9 +65,9 @@ class EnKeywordExtraction(object):
 		index = 0
 		for words in vertex_source:
 			for word in words:
-				if not self.word_index.has_key(word):
-					self.word_index[word] = index
-					self.index_word[index] = word
+				if not self.word_index.has_key(word.lower()):
+					self.word_index[word.lower()] = index
+					self.index_word[index] = word.lower()
 					index += 1
 
 		#构造图
@@ -76,8 +83,10 @@ class EnKeywordExtraction(object):
 					continue
 				index1 = self.word_index[w1]
 				index2 = self.word_index[w2]
-				self.graph[index1][index2] = 1.0
-				self.graph[index2][index1] = 1.0
+				w = self.get_edge_weight(w1,w2)
+				#print w1,w2,": ",w
+				self.graph[index1][index2] = w
+				self.graph[index2][index1] = w
 		#使用networkx库的pagerank算法		
 		nx_graph = nx.from_numpy_matrix(self.graph)
 		scores = nx.pagerank(nx_graph)
@@ -86,7 +95,24 @@ class EnKeywordExtraction(object):
 		sorted_scores = sorted(scores.items(),key = lambda item: item[1], reverse = True)
 		for index,_ in sorted_scores:
 			self.keywords.append(self.index_word[index])
+			#print self.index_word[index],_
 
+	def get_edge_weight(self,word1,word2,a = 0.8, b = 0.1, c = 0.1):
+		'''
+			w(vi,vj) = a*1 + b*[tf(word1)+tf(word2)] + c*IsHeadSen(w1,w2)
+		'''
+		weight = 0
+		is_w1 = 0
+		is_w2 = 0
+		tf_w1 = self.counter[word1]
+		tf_w2 = self.counter[word2]
+		if word1 in self.firstSen:
+			is_w1 = 1
+		if word2 in self.firstSen:
+			is_w2 = 1
+		weight = a + b*(tf_w1 + tf_w2) + c*(is_w1 + is_w2)
+		return weight
+		
 	def get_keyphrases(self, article_type='Abstract'):
 		if article_type == 'Abstract':
 			aThird = len(self.keywords)
@@ -158,7 +184,8 @@ class EnKeywordExtraction(object):
 
 	def get_keyphrases_maximal(self,article_type='Abstract'):
 		if article_type == 'Abstract':
-			aThird = len(self.keywords)/3
+			#aThird = len(self.keywords)
+			aThird = 20
 		elif article_type == 'Fulltext': 
 			aThird = len(self.keywords)/3
 		keyphrases = self.keywords[0:aThird]
@@ -170,11 +197,11 @@ class EnKeywordExtraction(object):
 			i = 0 
 			while i < len(textlist):
 				firstWord = textlist[i]
-				if firstWord in keyphrases:
+				if firstWord.lower() in keyphrases:
 					phrase = firstWord
 					j = i+1
 					while j < len(textlist):
-						if textlist[j] in keyphrases:
+						if textlist[j].lower() in keyphrases:
 							phrase += ' '+textlist[j]
 							j += 1
 						else:
@@ -184,7 +211,7 @@ class EnKeywordExtraction(object):
 					i = j+1
 				else:
 					i += 1
-		#num = len(self.keywords)/3
+		num = len(self.keywords)/3 + 1
 		return modifiedKeyphrases
 
 	def get_tag(self,text):
@@ -193,11 +220,11 @@ class EnKeywordExtraction(object):
 
 if __name__ == '__main__':
 
-	text = open('../text/007.txt','r+').read()
+	text = open('../text/008.txt','r+').read()
 	keyword = EnKeywordExtraction(stop_words_file='./trainer/stopword_en.data')
 	keyword.train(text=text,with_tag_filter=True)
-
-	#print keyword.keywords
+	print keyword.firstSen
+	#print keyword.words_no_filter
 	print keyword.get_keyphrases_maximal()
 	#word_tag =  keyword.get_tag(text)
 	#print word_tag
