@@ -1,0 +1,34 @@
+2015-04-06 12:31:02,054 [MainThread  ] [INFO ]  Running ROUGE with command 
+/home/chenbjin/SearchJob/RELEASE-1.5.5/ROUGE-1.5.5.pl -e /home/chenbjin/SearchJob/RELEASE-1.5.5/data -c 95 -2 -1 -U -r 1000 -n 4 -w 1.2 -a -m /tmp/tmpUQ02SM/rouge_conf.xml
+---------------------------------------------
+1 ROUGE-1 Average_R: 0.48385 (95%-conf.int. 0.47065 - 0.49704)
+1 ROUGE-1 Average_P: 0.46326 (95%-conf.int. 0.45537 - 0.47065)
+1 ROUGE-1 Average_F: 0.47240 (95%-conf.int. 0.46339 - 0.48104)
+---------------------------------------------
+1 ROUGE-2 Average_R: 0.32445 (95%-conf.int. 0.31226 - 0.33675)
+1 ROUGE-2 Average_P: 0.31002 (95%-conf.int. 0.30151 - 0.31796)
+1 ROUGE-2 Average_F: 0.31643 (95%-conf.int. 0.30703 - 0.32587)
+---------------------------------------------
+1 ROUGE-3 Average_R: 0.28547 (95%-conf.int. 0.27415 - 0.29691)
+1 ROUGE-3 Average_P: 0.27264 (95%-conf.int. 0.26474 - 0.28018)
+1 ROUGE-3 Average_F: 0.27834 (95%-conf.int. 0.26956 - 0.28718)
+---------------------------------------------
+1 ROUGE-4 Average_R: 0.25514 (95%-conf.int. 0.24495 - 0.26552)
+1 ROUGE-4 Average_P: 0.24361 (95%-conf.int. 0.23654 - 0.25033)
+1 ROUGE-4 Average_F: 0.24873 (95%-conf.int. 0.24093 - 0.25659)
+---------------------------------------------
+1 ROUGE-L Average_R: 0.46940 (95%-conf.int. 0.45604 - 0.48290)
+1 ROUGE-L Average_P: 0.44931 (95%-conf.int. 0.44125 - 0.45668)
+1 ROUGE-L Average_F: 0.45823 (95%-conf.int. 0.44927 - 0.46703)
+---------------------------------------------
+1 ROUGE-W-1.2 Average_R: 0.15242 (95%-conf.int. 0.14827 - 0.15663)
+1 ROUGE-W-1.2 Average_P: 0.28101 (95%-conf.int. 0.27589 - 0.28570)
+1 ROUGE-W-1.2 Average_F: 0.19728 (95%-conf.int. 0.19320 - 0.20141)
+---------------------------------------------
+1 ROUGE-S* Average_R: 0.22969 (95%-conf.int. 0.21740 - 0.24152)
+1 ROUGE-S* Average_P: 0.21115 (95%-conf.int. 0.20461 - 0.21733)
+1 ROUGE-S* Average_F: 0.21832 (95%-conf.int. 0.21098 - 0.22550)
+---------------------------------------------
+1 ROUGE-SU* Average_R: 0.23254 (95%-conf.int. 0.22024 - 0.24438)
+1 ROUGE-SU* Average_P: 0.21390 (95%-conf.int. 0.20734 - 0.22009)
+1 ROUGE-SU* Average_F: 0.22111 (95%-conf.int. 0.21375 - 0.22829)
