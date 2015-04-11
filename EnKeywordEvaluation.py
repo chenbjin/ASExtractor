@@ -49,12 +49,12 @@ if __name__ == '__main__':
 	
 	correct_num,system_key_num,wrong_file = get_keyphrases(basepath, filelist)
 
-	mannual_key_num = 8875
+	mannual_key_num = 7884
 	average_num = correct_num*1.0 / len(filelist)
 	precision = correct_num*1.0 / system_key_num
 	recall = correct_num*1.0 / mannual_key_num
 	f_measure = 2*precision*recall / (precision + recall)
-	print '-------------------'
+	print '-------------------15 keyword, modified w=get_similarity(stemmed), get_keyphrases_maximal'
 	print 'article_num:',len(filelist)
 	print 'mannual_key_num:' , mannual_key_num
 	print 'system_key_num:', system_key_num
@@ -66,62 +66,93 @@ if __name__ == '__main__':
 	print '--------------------'
 	print 'wrong_file:',wrong_file
 '''
-keyphrase: 12/per, get_keyphrases_maximal
--------------------
-mannual_key_num: 8932
-system_key_num: 9264
-correct_num: 2923
-average_num: 3.78626943005
-Precision:  0.315522452504
-Recall: 0.327250335871
-F-measure: 0.321279396882
-[Finished in 512.9s]
-
-keyphrase: len(keywords)/3, get_keyphrases_maximal
--------------------
-mannual_key_num: 8932
-system_key_num: 11439
-correct_num: 2861
-average_num: 3.70595854922
-Precision:  0.250109275286
-Recall: 0.320309001343
-F-measure: 0.280889499779
-[Finished in 541.2s]
-'''
-'''
-keyphrase: all, get_keyphrases_maximal
--------------------
-mannual_key_num: 8932
-system_key_num: 13777
-correct_num: 4114
-average_num: 5.39187418087
-Precision:  0.298613631415
-Recall: 0.460591133005
-F-measure: 0.36232330794
+-------------------20 keyword, w=1.0, modified get_keyphrases_maximal
+-------------------20 keyword, w=get_weight(6,3,1), modified get_keyphrases_maximal
+-------------------20 keyword, w=get_weight(6,2,2), modified get_keyphrases_maximal
+-------------------20 keyword, w=get_weight(5,3,2), modified get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 11187
+correct_num: 3590
+average_num: 5.32640949555
+Precision:  0.320908197014
+Recall: 0.455352612887
+F-measure: 0.37648786115
 --------------------
 
-keyphrase: all, get_keyphrases_maximal
--------------------
-article_num: 763
-mannual_key_num: 8875
-system_key_num: 13777
-correct_num: 4114
-average_num: 5.39187418087
-Precision:  0.298613631415
-Recall: 0.463549295775
-F-measure: 0.363235034434
+-------------------20 keyword, modified w=get_weight(5,3,2), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 11246
+correct_num: 3598
+average_num: 5.33827893175
+Precision:  0.319935977236
+Recall: 0.45636732623
+F-measure: 0.376163094616
 --------------------
 
-keyphrase:len(keywords)/3+1, get_keyphrases_maximal
--------------------
-article_num: 763
-mannual_key_num: 8875
-system_key_num: 11914
-correct_num: 3758
-average_num: 4.9252948886
-Precision:  0.315427228471
-Recall: 0.423436619718
-F-measure: 0.361537351484s
+-------------------20 keyword, modified w=get_weight(8,1,1), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 11220
+correct_num: 3600
+average_num: 5.3412462908
+Precision:  0.320855614973
+Recall: 0.456621004566
+F-measure: 0.376884422111
 --------------------
+
+-------------------20 keyword, modified w=get_weight(7,2,1), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 11242
+correct_num: 3600
+average_num: 5.3412462908
+Precision:  0.320227717488
+Recall: 0.456621004566
+F-measure: 0.376450904528
+--------------------
+
+-------------------20 keyword, modified w=get_similarity, get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 9482
+correct_num: 3132
+average_num: 4.646884273
+Precision:  0.330310061169
+Recall: 0.397260273973
+F-measure: 0.360704825521
+--------------------
+-------------------20 keyword, modified w=get_similarity(stemmed), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 9486
+correct_num: 3135
+average_num: 4.65133531157
+Precision:  0.330487033523
+Recall: 0.397640791476
+F-measure: 0.360967184801
+--------------------
+-------------------15 keyword, modified w=get_similarity(stemmed), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 8854
+correct_num: 2966
+average_num: 4.40059347181
+Precision:  0.334989835103
+Recall: 0.376204972095
+F-measure: 0.354403154499
+--------------------
+-------------------10 keyword, modified w=get_similarity(stemmed), get_keyphrases_maximal
+article_num: 674
+mannual_key_num: 7884
+system_key_num: 7769
+correct_num: 2632
+average_num: 3.90504451039
+Precision:  0.33878234007
+Recall: 0.333840690005
+F-measure: 0.336293362295
+--------------------
+
 
 '''

@@ -94,8 +94,8 @@ if __name__ == '__main__':
 	text = open('../text/007.txt','r+').read()
 	#text = "Good morning, my friends. I will finish my job this morning."
 	sentence,words_no_filter,words_no_stop_words,words_all_filters = extraction.segment(text)
-	#print sentence
+	print sentence
 	#print words_no_filter
-	#print words_no_stop_words
+	print words_no_stop_words
 	#print words_all_filters
 	

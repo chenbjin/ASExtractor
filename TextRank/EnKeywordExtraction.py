@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 import collections
 import re
+from nltk.corpus import wordnet as wn
 from EnSegmentation import EnSegmentation
 
 import sys
@@ -37,14 +38,14 @@ class EnKeywordExtraction(object):
 			for res in result:
 				yield res
 
-	def train(self, text, window = 2, lower = False, with_tag_filter = True, vertex_source = 'all_filters', edge_source = 'no_stop_words'):
+	def train(self, text, window = 2, lower = False, with_tag_filter = True, vertex_source = 'all_filters', edge_source = 'no_filter'):
 		self.text = text
 		(_, 
 		self.words_no_filter, 
 		self.words_no_stop_words, 
 		self.words_all_filters) = self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
 		self.tag_text = self.get_tag(text)
-
+		#print self.tag_text
 		self.firstSen = self.words_no_stop_words[0]
 		self.counter = collections.Counter(re.findall( '\w+' ,self.text))
 
@@ -77,13 +78,17 @@ class EnKeywordExtraction(object):
 		#构造边
 		for word_list in edge_source:
 			for w1,w2 in self.combine(word_list,window):
-				if not self.word_index.has_key(w1):
+				if not self.word_index.has_key(w1.lower()):
 					continue
-				if not self.word_index.has_key(w2):
+				if not self.word_index.has_key(w2.lower()):
 					continue
-				index1 = self.word_index[w1]
-				index2 = self.word_index[w2]
-				w = self.get_edge_weight(w1,w2)
+				#print w1,w2
+				if w1 == w2 :
+					continue
+				index1 = self.word_index[w1.lower()]
+				index2 = self.word_index[w2.lower()]
+				w = self.get_similarity(w1,w2) + 1
+				#w = self.get_edge_weight(w1,w2)
 				#print w1,w2,": ",w
 				self.graph[index1][index2] = w
 				self.graph[index2][index1] = w
@@ -96,8 +101,36 @@ class EnKeywordExtraction(object):
 		for index,_ in sorted_scores:
 			self.keywords.append(self.index_word[index])
 			#print self.index_word[index],_
+	
+	def get_similarity(self,word1,word2):
+		'''
+		print 'before stemmed:',word1
+		print 'after stemmed:',wn.morphy(word1.lower())
+		print 'before stemmed:',word2
+		print 'after stemmed:',wn.morphy(word2.lower())
+		'''
+		#stemmed word
+		if wn.morphy(word1.lower()) != None :
+			word1 = wn.morphy(word1.lower())
+		if wn.morphy(word2.lower()) != None :
+			word2 = wn.morphy(word2.lower()) 
+		word1_synsets = wn.synsets(word1)
+		#print word1_synsets
+		word2_synsets = wn.synsets(word2)
+		#print word2_synsets
+		sim = -1
 
-	def get_edge_weight(self,word1,word2,a = 0.8, b = 0.1, c = 0.1):
+		for syn1 in word1_synsets:
+			w1 = wn.synset(syn1.name())
+			for syn2 in word2_synsets:
+				w2 = wn.synset(syn2.name())
+				tmp = w1.path_similarity(w2)
+				#print tmp,syn1.name(),syn2.name()
+				if tmp > sim:
+					sim = tmp
+		return sim
+
+	def get_edge_weight(self,word1,word2,a = 0.7, b = 0.2, c = 0.1):
 		'''
 			w(vi,vj) = a*1 + b*[tf(word1)+tf(word2)] + c*IsHeadSen(w1,w2)
 		'''
@@ -110,6 +143,7 @@ class EnKeywordExtraction(object):
 			is_w1 = 1
 		if word2 in self.firstSen:
 			is_w2 = 1
+		#weight = a + b*((tf_w1 + tf_w2)/len(self.tag_text)) + c*((is_w1 + is_w2)/len(self.firstSen))
 		weight = a + b*(tf_w1 + tf_w2) + c*(is_w1 + is_w2)
 		return weight
 		
@@ -185,7 +219,7 @@ class EnKeywordExtraction(object):
 	def get_keyphrases_maximal(self,article_type='Abstract'):
 		if article_type == 'Abstract':
 			#aThird = len(self.keywords)
-			aThird = 20
+			aThird = 10
 		elif article_type == 'Fulltext': 
 			aThird = len(self.keywords)/3
 		keyphrases = self.keywords[0:aThird]
@@ -196,17 +230,22 @@ class EnKeywordExtraction(object):
 		for textlist in self.words_no_filter:
 			i = 0 
 			while i < len(textlist):
+				key_flag = False
 				firstWord = textlist[i]
-				if firstWord.lower() in keyphrases:
+				if firstWord.lower() in self.keywords:
+					if firstWord.lower() in keyphrases:
+						key_flag = True
 					phrase = firstWord
 					j = i+1
 					while j < len(textlist):
-						if textlist[j].lower() in keyphrases:
+						if textlist[j].lower() in self.keywords:
+							if textlist[j].lower() in keyphrases:
+								key_flag = True
 							phrase += ' '+textlist[j]
 							j += 1
 						else:
 							break
-					if phrase not in modifiedKeyphrases and j-i>1:   #bigram
+					if phrase not in modifiedKeyphrases and key_flag and j-i>1 :   #bigram
 						modifiedKeyphrases.append(phrase)
 					i = j+1
 				else:
@@ -219,15 +258,25 @@ class EnKeywordExtraction(object):
 
 
 if __name__ == '__main__':
-
-	text = open('../text/008.txt','r+').read()
+	
+	text = open('../text/007.txt','r+').read()
 	keyword = EnKeywordExtraction(stop_words_file='./trainer/stopword_en.data')
 	keyword.train(text=text,with_tag_filter=True)
-	print keyword.firstSen
 	#print keyword.words_no_filter
+	#print keyword.words_no_stop_words
+	#print keyword.words_all_filters
 	print keyword.get_keyphrases_maximal()
-	#word_tag =  keyword.get_tag(text)
-	#print word_tag
-	#for w in word_tag:
-	#	if w[1] == 'VBN':
-	#		print w
+	
+	'''
+	word_tag =  keyword.get_tag(text)
+	print word_tag
+	for w in word_tag:
+		if w[1] == 'VBN':
+			print w
+	'''
+	'''
+	w1 = 'cars'
+	w2 = 'flowers'
+	keyword = EnKeywordExtraction(stop_words_file='./trainer/stopword_en.data')
+	print keyword.get_similarity(w1,w2)
+	'''
