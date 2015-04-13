@@ -118,7 +118,7 @@ class EnKeywordExtraction(object):
 		#print word1_synsets
 		word2_synsets = wn.synsets(word2)
 		#print word2_synsets
-		sim = -1
+		sim = 0
 
 		for syn1 in word1_synsets:
 			w1 = wn.synset(syn1.name())

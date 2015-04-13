@@ -2,10 +2,19 @@
 import networkx as nx
 import numpy as np
 import math
+import time
+from nltk.corpus import wordnet as wn
 from EnSegmentation import EnSegmentation
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+def time_me(fn):
+    def _wrapper(*args, **kwargs):
+        start = time.clock()
+        fn(*args, **kwargs)
+        print "%s cost %s second"%(fn.__name__, time.clock() - start)
+    return _wrapper
 
 class EnSentenceExtraction(object):
 	"""docstring for EnSentenceExtraction"""
@@ -14,13 +23,15 @@ class EnSentenceExtraction(object):
 		self.seg = EnSegmentation(stop_words_file=stop_words_file)
 		self.sentences = None
 		self.graph = None
-		self.key_sentences = None
-		self.words_all_filters = None
-
-	def train(self,text,lower=False, with_tag_filter=True,source='all_filters',sim_func='Standard'):
 		self.key_sentences = []
-		(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
-		'''test for evaluation
+		self.words_all_filters = None
+		self.sim_2word={}
+
+	@time_me
+	def train(self,text,lower=False, with_tag_filter=True,source='all_filters',sim_func='Standard'):
+		#self.key_sentences = []
+		#(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
+		#'''test for evaluation
 		self.sentences = text
 		self.words_all_filters = self.seg.word_segmentation.sentence2word(sentences=self.sentences, 
 																			lower=lower, 
@@ -38,9 +49,10 @@ class EnSentenceExtraction(object):
 		elif sim_func == 'Levenshtein Distance':
 			sim_function = self._get_similarity_ld
 		else:
-			sim_function = self._get_similarity_standard
+			sim_function = self._get_similarity_wordnet
 
 		sentences_num = len(source)
+		#print sentences_num
 		self.graph = np.zeros((sentences_num,sentences_num))
 
 		for x in xrange(sentences_num):
@@ -93,6 +105,70 @@ class EnSentenceExtraction(object):
 			distances = newDistances
 		return distances[-1]
 
+	def _get_similarity_wordnet(self,sentence1,sentence2):
+		sen1_len = len(sentence1)
+		sen2_len = len(sentence2)
+		#L = sen1_len + abs((sen2_len-sen1_len))/2.0
+		L = (sen1_len + sen2_len )/ 2
+		Sim_total = 0
+		for w1 in sentence1 :
+			max_sim = 0
+			for w2 in sentence2:
+				tmp_sim = self._get_similarity_wordnet_2word(w1,w2)
+				#print 'tmp_sim:',w1,w2,tmp_sim
+				if tmp_sim > max_sim:
+					max_sim = tmp_sim
+				if max_sim == 1.0:
+					break	
+			#print 'max_sim:',max_sim
+			Sim_total += max_sim
+		result = Sim_total / L
+		#print 'result:',result
+		return result		
+
+	def _get_similarity_wordnet_2word(self,word1,word2):
+		'''
+		print 'before stemmed:',word1
+		print 'after stemmed:',wn.morphy(word1.lower())
+		print 'before stemmed:',word2
+		print 'after stemmed:',wn.morphy(word2.lower())
+		'''
+		#stemmed word
+		if wn.morphy(word1.lower()) != None :
+			word1 = wn.morphy(word1.lower())
+		if wn.morphy(word2.lower()) != None :
+			word2 = wn.morphy(word2.lower()) 
+
+		key1 = '(%s,%s)'%(word1,word2)
+		key2 = '(%s,%s)'%(word2,word1)
+
+		if self.sim_2word.has_key(key1):
+			return self.sim_2word[key1]
+		if self.sim_2word.has_key(key2):
+			return self.sim_2word[key2]
+
+		word1_synsets = wn.synsets(word1)
+		#print word1_synsets
+		word2_synsets = wn.synsets(word2)
+		#print word2_synsets
+		sim = 0
+
+		for syn1 in word1_synsets:
+			w1 = wn.synset(syn1.name())
+			for syn2 in word2_synsets:
+				w2 = wn.synset(syn2.name())
+				tmp = w1.path_similarity(w2)
+				#print tmp,syn1.name(),syn2.name()
+				if tmp > sim:
+					sim = tmp
+				if sim == 1.0:
+					break
+			if sim == 1.0:
+				break		
+		self.sim_2word[key1] = sim
+		self.sim_2word[key2] = sim
+		return sim
+
 	def get_key_sentences(self,sentences_percent='20%',num=None):
 		result = []
 		sentences_percent = filter(lambda x:x.isdigit(), sentences_percent)
@@ -118,5 +194,5 @@ class EnSentenceExtraction(object):
 if __name__ == '__main__':
 	text = open('../../001.txt', 'r').readlines()
 	senExtrac = EnSentenceExtraction(stop_words_file='./trainer/stopword_en.data')
-	senExtrac.train(text=text, lower=True, with_tag_filter=True, source='all_filters')
+	senExtrac.train(text=text, lower=True, with_tag_filter=True, source='all_filters',sim_func='wordnet')
 	print senExtrac.get_key_sentences_100w()

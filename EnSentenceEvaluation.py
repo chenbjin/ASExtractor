@@ -33,7 +33,7 @@ def get_summary(sentences):
 	return summary
 
 def main(path):
-	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/system.summary/'
+	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/wn.system.summary/'
 	doclist = sorted(getdoclist(path))
 	for doc in doclist:
 		print 'dealing with doc ',doc
@@ -52,3 +52,10 @@ def main(path):
 if __name__ == '__main__':
 	path = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/docs.with.sentence.breaks'
 	main(path)
+'''
+ pyrouge_evaluate_plain_text_files -s /home/chenbjin/SearchJob/ASExtractor/wn.system.summary/ 
+ -sfp 'd(\d+)(\w+).(\w+)(\d+)-(\d+).txt' -m /home/chenbjin/SearchJob/ASExtractor/model.summary/
+ -mfp 'd(\d+)(\w+).(\w+)(\d+)-(\d+).txt'
+
+ chenbjin@chenbjin-Acer:~$ pyrouge_evaluate_plain_text_files -s /home/chenbjin/SearchJob/ASExtractor/wn.system.summary/ -sfp 'd(\d+)[a-z].(\w+)(\d+)-(\d+).txt' -m /home/chenbjin/SearchJob/ASExtractor/model.summary/ -mfp 'd(\d+)[a-z].(\w+)(\d+)-(\d+).txt'
+'''
