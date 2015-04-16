@@ -57,7 +57,7 @@ class EnWordSegmentation(object):
 									lower=lower, 
 									with_stop_words=with_stop_words, 
 									with_tag_filter=with_tag_filter)
-			if len(sen2word) > 0:
+			if len(sen2word) > 1:
 				result.append(sen2word)
 		return result
 

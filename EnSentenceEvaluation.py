@@ -33,7 +33,7 @@ def get_summary(sentences):
 	return summary
 
 def main(path):
-	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/wn.system.summary/'
+	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/ld.system.summary/'
 	doclist = sorted(getdoclist(path))
 	for doc in doclist:
 		print 'dealing with doc ',doc

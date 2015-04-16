@@ -56,7 +56,8 @@ class EnSentenceExtraction(object):
 		self.graph = np.zeros((sentences_num,sentences_num))
 
 		for x in xrange(sentences_num):
-			for y in xrange(x,sentences_num):
+			for y in xrange(x+1,sentences_num):
+				#print x,y
 				similarity = sim_function(source[x],source[y])
 				#print similarity
 				self.graph[x,y] = similarity
@@ -108,9 +109,36 @@ class EnSentenceExtraction(object):
 	def _get_similarity_wordnet(self,sentence1,sentence2):
 		sen1_len = len(sentence1)
 		sen2_len = len(sentence2)
+		sen2 = sentence2[:]
 		#L = sen1_len + abs((sen2_len-sen1_len))/2.0
-		L = (sen1_len + sen2_len )/ 2
+		#L = (sen1_len + sen2_len )/ 2
 		Sim_total = 0
+		
+		x = 0
+		count = 0
+		while x < sen1_len:		
+			if len(sen2) == 0:
+				break
+			y = 0
+			max_sim = 0
+			index2 = -1
+			while y < len(sen2):
+				#print x,y
+				tmp_sim = self._get_similarity_wordnet_2word(sentence1[x],sen2[y])
+				if tmp_sim > max_sim:
+					max_sim = tmp_sim
+					index2 = y
+				if max_sim == 1.0:
+					break
+				y += 1
+			Sim_total += max_sim
+			#print "max:",max_sim
+			if index2 >= 0:
+				del sen2[index2]
+				count += 1
+			x += 1
+			'''
+		
 		for w1 in sentence1 :
 			max_sim = 0
 			for w2 in sentence2:
@@ -120,9 +148,12 @@ class EnSentenceExtraction(object):
 					max_sim = tmp_sim
 				if max_sim == 1.0:
 					break	
+			if max_sim == 1.0:
+				break
 			#print 'max_sim:',max_sim
 			Sim_total += max_sim
-		result = Sim_total / L
+		'''
+		result = Sim_total / count
 		#print 'result:',result
 		return result		
 
