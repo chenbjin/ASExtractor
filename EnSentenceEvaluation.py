@@ -1,4 +1,8 @@
 #-*- encoding: utf-8 -*-
+'''
+@chenbjin 2015-04-26
+获取duc2002单文档语料的摘要
+'''
 import os
 import re
 from EnExtractor import EnExtractor
@@ -7,24 +11,18 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 def getdoclist(path):
-	return os.listdir(path)
+	return sorted(os.listdir(path))
 
 def getfilelist(path,doc):
-	return os.listdir(path+'/'+doc)
+	return sorted(os.listdir(path+'/'+doc))
 
 def getsentences(path,doc,filename):
-	f = open(path+'/'+doc+'/'+filename)
-	content = f.read()
-	begin = content.find('<TEXT>')
-	if begin:
-		content = content[begin:]
-	allsen = re.findall('<s docid=".*" num=".*" wdcount=".*">(.*?)</s>', content, re.M)
-	#print len(allsen)
+	allsens = open(path+'/'+doc+'/'+filename).readlines()
 	result = []
-	#ff = open('result.txt','w')
-	for sen in allsen:
-		result.append(sen.strip())
-		#ff.write(sen.strip()+'\n')
+	for sen in allsens:
+		tmp = sen.strip()
+		if len(tmp) > 1:
+			result.append(tmp)#remove blank line
 	return result
 
 def get_summary(sentences):
@@ -33,12 +31,11 @@ def get_summary(sentences):
 	return summary
 
 def main(path):
-	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/ld.system.summary/'
-	doclist = sorted(getdoclist(path))
+	abspath = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/wordnet.system.summary/'
+	doclist = sorted(getdoclist(path))	
 	for doc in doclist:
 		print 'dealing with doc ',doc
 		filelist = sorted(getfilelist(path, doc))
-
 		for filename in filelist:
 			print "------",filename
 			f = open(abspath+doc+'.'+filename,'w+')
@@ -50,12 +47,5 @@ def main(path):
 	print '-------done----------' 
 
 if __name__ == '__main__':
-	path = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/docs.with.sentence.breaks'
+	path = '/home/chenbjin/SearchJob/DUC2002_Summarization_Documents/DUC2002_test_data'
 	main(path)
-'''
- pyrouge_evaluate_plain_text_files -s /home/chenbjin/SearchJob/ASExtractor/wn.system.summary/ 
- -sfp 'd(\d+)(\w+).(\w+)(\d+)-(\d+).txt' -m /home/chenbjin/SearchJob/ASExtractor/model.summary/
- -mfp 'd(\d+)(\w+).(\w+)(\d+)-(\d+).txt'
-
- chenbjin@chenbjin-Acer:~$ pyrouge_evaluate_plain_text_files -s /home/chenbjin/SearchJob/ASExtractor/wn.system.summary/ -sfp 'd(\d+)[a-z].(\w+)(\d+)-(\d+).txt' -m /home/chenbjin/SearchJob/ASExtractor/model.summary/ -mfp 'd(\d+)[a-z].(\w+)(\d+)-(\d+).txt'
-'''

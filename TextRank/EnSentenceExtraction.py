@@ -50,6 +50,8 @@ class EnSentenceExtraction(object):
 			sim_function = self._get_similarity_ld
 		else:
 			sim_function = self._get_similarity_wordnet
+		
+		#print sim_function
 
 		sentences_num = len(source)
 		#print sentences_num
@@ -153,7 +155,10 @@ class EnSentenceExtraction(object):
 			#print 'max_sim:',max_sim
 			Sim_total += max_sim
 		'''
-		result = Sim_total / count
+		if count == 0:
+			result = 0
+		else:
+			result = Sim_total / count
 		#print 'result:',result
 		return result		
 
