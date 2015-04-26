@@ -29,9 +29,9 @@ class EnSentenceExtraction(object):
 
 	@time_me
 	def train(self,text,lower=False, with_tag_filter=True,source='all_filters',sim_func='Standard'):
-		#self.key_sentences = []
-		#(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
-		#'''test for evaluation
+		self.key_sentences = []
+		(self.sentences,_,_,self.words_all_filters)=self.seg.segment(text=text, lower=lower, with_tag_filter=with_tag_filter)
+		'''test for evaluation
 		self.sentences = text
 		self.words_all_filters = self.seg.word_segmentation.sentence2word(sentences=self.sentences, 
 																			lower=lower, 

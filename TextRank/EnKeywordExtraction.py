@@ -251,7 +251,7 @@ class EnKeywordExtraction(object):
 				else:
 					i += 1
 		num = len(self.keywords)/3 + 1
-		return modifiedKeyphrases
+		return modifiedKeyphrases[:12]
 
 	def get_tag(self,text):
 		return self.seg.get_tag_text(text)

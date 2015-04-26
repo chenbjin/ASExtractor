@@ -14,9 +14,12 @@ class EnExtractor(object):
 		#print self.get_tag(text)
 		return keyphrase
 
-	def summary_train(self,text,sentences_percent='10%', sim_func='wordnet',num=100):
+	def summary_train(self,text,sentences_percent='default', sim_func='wordnet',num=100):
 		self.summary_extraction.train(text=text, sim_func=sim_func)
-		summary = self.summary_extraction.get_key_sentences_100w()
+		if sentences_percent == 'default':
+			summary = self.summary_extraction.get_key_sentences_100w()
+		else:
+			summary = self.summary_extraction.get_key_sentences(sentences_percent=sentences_percent)
 		return summary
 
 	def get_tag(self,text):

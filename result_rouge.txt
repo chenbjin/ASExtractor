@@ -1,34 +1,141 @@
-2015-04-06 12:31:02,054 [MainThread  ] [INFO ]  Running ROUGE with command 
-/home/chenbjin/SearchJob/RELEASE-1.5.5/ROUGE-1.5.5.pl -e /home/chenbjin/SearchJob/RELEASE-1.5.5/data -c 95 -2 -1 -U -r 1000 -n 4 -w 1.2 -a -m /tmp/tmpUQ02SM/rouge_conf.xml
+standard system summary vs. model summary
 ---------------------------------------------
-1 ROUGE-1 Average_R: 0.48385 (95%-conf.int. 0.47065 - 0.49704)
-1 ROUGE-1 Average_P: 0.46326 (95%-conf.int. 0.45537 - 0.47065)
-1 ROUGE-1 Average_F: 0.47240 (95%-conf.int. 0.46339 - 0.48104)
+1 ROUGE-1 Average_R: 0.63894 (95%-conf.int. 0.63289 - 0.64534)
+1 ROUGE-1 Average_P: 0.61448 (95%-conf.int. 0.60904 - 0.61980)
+1 ROUGE-1 Average_F: 0.62438 (95%-conf.int. 0.61948 - 0.62960)
 ---------------------------------------------
-1 ROUGE-2 Average_R: 0.32445 (95%-conf.int. 0.31226 - 0.33675)
-1 ROUGE-2 Average_P: 0.31002 (95%-conf.int. 0.30151 - 0.31796)
-1 ROUGE-2 Average_F: 0.31643 (95%-conf.int. 0.30703 - 0.32587)
+1 ROUGE-2 Average_R: 0.44774 (95%-conf.int. 0.44145 - 0.45454)
+1 ROUGE-2 Average_P: 0.42992 (95%-conf.int. 0.42439 - 0.43587)
+1 ROUGE-2 Average_F: 0.43719 (95%-conf.int. 0.43177 - 0.44330)
 ---------------------------------------------
-1 ROUGE-3 Average_R: 0.28547 (95%-conf.int. 0.27415 - 0.29691)
-1 ROUGE-3 Average_P: 0.27264 (95%-conf.int. 0.26474 - 0.28018)
-1 ROUGE-3 Average_F: 0.27834 (95%-conf.int. 0.26956 - 0.28718)
+1 ROUGE-3 Average_R: 0.37460 (95%-conf.int. 0.36878 - 0.38099)
+1 ROUGE-3 Average_P: 0.35941 (95%-conf.int. 0.35438 - 0.36472)
+1 ROUGE-3 Average_F: 0.36562 (95%-conf.int. 0.36048 - 0.37130)
 ---------------------------------------------
-1 ROUGE-4 Average_R: 0.25514 (95%-conf.int. 0.24495 - 0.26552)
-1 ROUGE-4 Average_P: 0.24361 (95%-conf.int. 0.23654 - 0.25033)
-1 ROUGE-4 Average_F: 0.24873 (95%-conf.int. 0.24093 - 0.25659)
+1 ROUGE-4 Average_R: 0.32543 (95%-conf.int. 0.32036 - 0.33122)
+1 ROUGE-4 Average_P: 0.31211 (95%-conf.int. 0.30757 - 0.31713)
+1 ROUGE-4 Average_F: 0.31756 (95%-conf.int. 0.31295 - 0.32270)
 ---------------------------------------------
-1 ROUGE-L Average_R: 0.46940 (95%-conf.int. 0.45604 - 0.48290)
-1 ROUGE-L Average_P: 0.44931 (95%-conf.int. 0.44125 - 0.45668)
-1 ROUGE-L Average_F: 0.45823 (95%-conf.int. 0.44927 - 0.46703)
+1 ROUGE-L Average_R: 0.60981 (95%-conf.int. 0.60380 - 0.61636)
+1 ROUGE-L Average_P: 0.58657 (95%-conf.int. 0.58111 - 0.59195)
+1 ROUGE-L Average_F: 0.59597 (95%-conf.int. 0.59090 - 0.60159)
 ---------------------------------------------
-1 ROUGE-W-1.2 Average_R: 0.15242 (95%-conf.int. 0.14827 - 0.15663)
-1 ROUGE-W-1.2 Average_P: 0.28101 (95%-conf.int. 0.27589 - 0.28570)
-1 ROUGE-W-1.2 Average_F: 0.19728 (95%-conf.int. 0.19320 - 0.20141)
+1 ROUGE-W-1.2 Average_R: 0.19663 (95%-conf.int. 0.19453 - 0.19899)
+1 ROUGE-W-1.2 Average_P: 0.36792 (95%-conf.int. 0.36428 - 0.37181)
+1 ROUGE-W-1.2 Average_F: 0.25561 (95%-conf.int. 0.25314 - 0.25845)
 ---------------------------------------------
-1 ROUGE-S* Average_R: 0.22969 (95%-conf.int. 0.21740 - 0.24152)
-1 ROUGE-S* Average_P: 0.21115 (95%-conf.int. 0.20461 - 0.21733)
-1 ROUGE-S* Average_F: 0.21832 (95%-conf.int. 0.21098 - 0.22550)
+1 ROUGE-S* Average_R: 0.38262 (95%-conf.int. 0.37582 - 0.39003)
+1 ROUGE-S* Average_P: 0.35434 (95%-conf.int. 0.34842 - 0.36025)
+1 ROUGE-S* Average_F: 0.36325 (95%-conf.int. 0.35789 - 0.36897)
 ---------------------------------------------
-1 ROUGE-SU* Average_R: 0.23254 (95%-conf.int. 0.22024 - 0.24438)
-1 ROUGE-SU* Average_P: 0.21390 (95%-conf.int. 0.20734 - 0.22009)
-1 ROUGE-SU* Average_F: 0.22111 (95%-conf.int. 0.21375 - 0.22829)
+1 ROUGE-SU* Average_R: 0.38551 (95%-conf.int. 0.37872 - 0.39292)
+1 ROUGE-SU* Average_P: 0.35719 (95%-conf.int. 0.35127 - 0.36308)
+1 ROUGE-SU* Average_F: 0.36614 (95%-conf.int. 0.36077 - 0.37185)
+
+[Finished in 175.5s]
+
+editdis.system.summary vs. model summary
+---------------------------------------------
+1 ROUGE-1 Average_R: 0.61403 (95%-conf.int. 0.60695 - 0.62125)
+1 ROUGE-1 Average_P: 0.60046 (95%-conf.int. 0.59471 - 0.60575)
+1 ROUGE-1 Average_F: 0.60499 (95%-conf.int. 0.59922 - 0.61068)
+---------------------------------------------
+1 ROUGE-2 Average_R: 0.42255 (95%-conf.int. 0.41527 - 0.43007)
+1 ROUGE-2 Average_P: 0.41209 (95%-conf.int. 0.40599 - 0.41837)
+1 ROUGE-2 Average_F: 0.41577 (95%-conf.int. 0.40957 - 0.42234)
+---------------------------------------------
+1 ROUGE-3 Average_R: 0.35259 (95%-conf.int. 0.34610 - 0.35904)
+1 ROUGE-3 Average_P: 0.34358 (95%-conf.int. 0.33836 - 0.34923)
+1 ROUGE-3 Average_F: 0.34677 (95%-conf.int. 0.34132 - 0.35250)
+---------------------------------------------
+1 ROUGE-4 Average_R: 0.30558 (95%-conf.int. 0.29976 - 0.31134)
+1 ROUGE-4 Average_P: 0.29760 (95%-conf.int. 0.29288 - 0.30243)
+1 ROUGE-4 Average_F: 0.30044 (95%-conf.int. 0.29547 - 0.30565)
+---------------------------------------------
+1 ROUGE-L Average_R: 0.58440 (95%-conf.int. 0.57737 - 0.59177)
+1 ROUGE-L Average_P: 0.57134 (95%-conf.int. 0.56559 - 0.57680)
+1 ROUGE-L Average_F: 0.57573 (95%-conf.int. 0.56994 - 0.58182)
+---------------------------------------------
+1 ROUGE-W-1.2 Average_R: 0.18776 (95%-conf.int. 0.18529 - 0.19029)
+1 ROUGE-W-1.2 Average_P: 0.35721 (95%-conf.int. 0.35327 - 0.36105)
+1 ROUGE-W-1.2 Average_F: 0.24544 (95%-conf.int. 0.24269 - 0.24825)
+---------------------------------------------
+1 ROUGE-S* Average_R: 0.35165 (95%-conf.int. 0.34375 - 0.35959)
+1 ROUGE-S* Average_P: 0.33513 (95%-conf.int. 0.32889 - 0.34088)
+1 ROUGE-S* Average_F: 0.33846 (95%-conf.int. 0.33226 - 0.34444)
+---------------------------------------------
+1 ROUGE-SU* Average_R: 0.35461 (95%-conf.int. 0.34671 - 0.36254)
+1 ROUGE-SU* Average_P: 0.33809 (95%-conf.int. 0.33185 - 0.34384)
+1 ROUGE-SU* Average_F: 0.34142 (95%-conf.int. 0.33524 - 0.34740)
+
+[Finished in 180.5s]
+
+wordnet.system.summary vs. model.summary
+---------------------------------------------
+1 ROUGE-1 Average_R: 0.66041 (95%-conf.int. 0.65529 - 0.66579)
+1 ROUGE-1 Average_P: 0.57812 (95%-conf.int. 0.57227 - 0.58394)
+1 ROUGE-1 Average_F: 0.61456 (95%-conf.int. 0.60937 - 0.61949)
+---------------------------------------------
+1 ROUGE-2 Average_R: 0.46176 (95%-conf.int. 0.45602 - 0.46789)
+1 ROUGE-2 Average_P: 0.40408 (95%-conf.int. 0.39836 - 0.40952)
+1 ROUGE-2 Average_F: 0.42963 (95%-conf.int. 0.42436 - 0.43536)
+---------------------------------------------
+1 ROUGE-3 Average_R: 0.38926 (95%-conf.int. 0.38426 - 0.39460)
+1 ROUGE-3 Average_P: 0.34048 (95%-conf.int. 0.33546 - 0.34544)
+1 ROUGE-3 Average_F: 0.36207 (95%-conf.int. 0.35747 - 0.36696)
+---------------------------------------------
+1 ROUGE-4 Average_R: 0.33956 (95%-conf.int. 0.33520 - 0.34424)
+1 ROUGE-4 Average_P: 0.29683 (95%-conf.int. 0.29233 - 0.30123)
+1 ROUGE-4 Average_F: 0.31573 (95%-conf.int. 0.31170 - 0.32001)
+---------------------------------------------
+1 ROUGE-L Average_R: 0.63019 (95%-conf.int. 0.62488 - 0.63581)
+1 ROUGE-L Average_P: 0.55181 (95%-conf.int. 0.54584 - 0.55759)
+1 ROUGE-L Average_F: 0.58652 (95%-conf.int. 0.58134 - 0.59198)
+---------------------------------------------
+1 ROUGE-W-1.2 Average_R: 0.20214 (95%-conf.int. 0.20013 - 0.20431)
+1 ROUGE-W-1.2 Average_P: 0.34415 (95%-conf.int. 0.34011 - 0.34806)
+1 ROUGE-W-1.2 Average_F: 0.25403 (95%-conf.int. 0.25145 - 0.25661)
+---------------------------------------------
+1 ROUGE-S* Average_R: 0.40752 (95%-conf.int. 0.40165 - 0.41329)
+1 ROUGE-S* Average_P: 0.31454 (95%-conf.int. 0.30888 - 0.32028)
+1 ROUGE-S* Average_F: 0.35075 (95%-conf.int. 0.34571 - 0.35584)
+---------------------------------------------
+1 ROUGE-SU* Average_R: 0.41037 (95%-conf.int. 0.40450 - 0.41613)
+1 ROUGE-SU* Average_P: 0.31716 (95%-conf.int. 0.31151 - 0.32290)
+1 ROUGE-SU* Average_F: 0.35351 (95%-conf.int. 0.34846 - 0.35859)
+
+[Finished in 210.3s]
+
+baseline vs. model.summary
+---------------------------------------------
+1 ROUGE-1 Average_R: 0.61626 (95%-conf.int. 0.60997 - 0.62305)
+1 ROUGE-1 Average_P: 0.65391 (95%-conf.int. 0.64878 - 0.65925)
+1 ROUGE-1 Average_F: 0.63217 (95%-conf.int. 0.62713 - 0.63733)
+---------------------------------------------
+1 ROUGE-2 Average_R: 0.44156 (95%-conf.int. 0.43516 - 0.44861)
+1 ROUGE-2 Average_P: 0.46799 (95%-conf.int. 0.46200 - 0.47418)
+1 ROUGE-2 Average_F: 0.45270 (95%-conf.int. 0.44685 - 0.45881)
+---------------------------------------------
+1 ROUGE-3 Average_R: 0.37240 (95%-conf.int. 0.36639 - 0.37858)
+1 ROUGE-3 Average_P: 0.39464 (95%-conf.int. 0.38923 - 0.40032)
+1 ROUGE-3 Average_F: 0.38175 (95%-conf.int. 0.37647 - 0.38744)
+---------------------------------------------
+1 ROUGE-4 Average_R: 0.32443 (95%-conf.int. 0.31884 - 0.33032)
+1 ROUGE-4 Average_P: 0.34384 (95%-conf.int. 0.33869 - 0.34941)
+1 ROUGE-4 Average_F: 0.33259 (95%-conf.int. 0.32761 - 0.33789)
+---------------------------------------------
+1 ROUGE-L Average_R: 0.58996 (95%-conf.int. 0.58378 - 0.59696)
+1 ROUGE-L Average_P: 0.62595 (95%-conf.int. 0.62063 - 0.63147)
+1 ROUGE-L Average_F: 0.60516 (95%-conf.int. 0.60005 - 0.61075)
+---------------------------------------------
+1 ROUGE-W-1.2 Average_R: 0.19434 (95%-conf.int. 0.19215 - 0.19670)
+1 ROUGE-W-1.2 Average_P: 0.40153 (95%-conf.int. 0.39752 - 0.40578)
+1 ROUGE-W-1.2 Average_F: 0.26116 (95%-conf.int. 0.25846 - 0.26396)
+---------------------------------------------
+1 ROUGE-S* Average_R: 0.36232 (95%-conf.int. 0.35516 - 0.36996)
+1 ROUGE-S* Average_P: 0.40716 (95%-conf.int. 0.40081 - 0.41357)
+1 ROUGE-S* Average_F: 0.37796 (95%-conf.int. 0.37203 - 0.38411)
+---------------------------------------------
+1 ROUGE-SU* Average_R: 0.36518 (95%-conf.int. 0.35801 - 0.37282)
+1 ROUGE-SU* Average_P: 0.41013 (95%-conf.int. 0.40381 - 0.41652)
+1 ROUGE-SU* Average_F: 0.38090 (95%-conf.int. 0.37496 - 0.38704)

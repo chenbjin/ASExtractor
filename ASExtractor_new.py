@@ -25,11 +25,12 @@ class ASExtractor(wx.Frame):
 		for each in self.toolbarData():
 			self.addtool(toolbar, *each)
 			toolbar.AddSeparator()
-			toolbar.Realize() 
+			toolbar.Realize()
 		#源文件/摘要/关键词 展示区
-		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,250))
-		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,120))
+		self.sourcePage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,220))
+		self.abstractPage = wx.TextCtrl(self,style=wx.TE_MULTILINE|wx.TE_RICH,size=(750,150))
 		self.keywordPage = wx.TextCtrl(self,style=wx.TE_MULTILINE,size=(750,90))
+	
 		#提示条
 		article_hint = wx.StaticText(self,label="源文档内容:")
 		abstract_hint = wx.StaticText(self,label="摘要:")
@@ -48,12 +49,12 @@ class ASExtractor(wx.Frame):
 		self.Bind(wx.EVT_COMBOBOX, self.OnLanguageSelected, self.languageType)
 
 		sentences_percent_label = wx.StaticText(self,-1,label="比例:")
-		sentences_percent_list = ['5%','10%','12%','15%','20%']
+		sentences_percent_list = ['default','10%','12%','15%','20%']
 		self.sentencesPercent = wx.ComboBox(self, size=(80, -1), choices=sentences_percent_list, style=wx.CB_DROPDOWN)
-		self.sentencesPercent.SetSelection(3) 
+		self.sentencesPercent.SetSelection(0) 
 
 		similarity_function_label = wx.StaticText(self,-1,label="相似度函数:")
-		similarity_function_list = ['Standard','Levenshtein Distance','Other']
+		similarity_function_list = ['Standard','Levenshtein Distance','WordNet']
 		self.similarityFunction = wx.ComboBox(self, size=(140, -1), choices=similarity_function_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
 		self.similarityFunction.SetSelection(0) 
 
@@ -171,6 +172,11 @@ class ASExtractor(wx.Frame):
 				keyword_result = '/'.join(keyword)
 				keyword_result += '\n关键短语：\n' + '/'.join(keyphrase)
 				result += '。'.join(abstract)+r'。'
+				self.abstractPage.SetValue(result)
+				#设置文本样式 
+				#f = wx.Font(10, wx.ROMAN, wx.NORMAL, wx.NORMAL, True)  #创建一个字体
+				#self.abstractPage.SetStyle(0, len(result), wx.TextAttr('black',wx.NullColor,f))
+				self.keywordPage.SetValue(keyword_result)	
 			else :
 				art_type = self.articleType.GetSelection()
 				extractor = EnExtractor(stop_words_file='./TextRank/trainer/stopword_en.data')
@@ -182,10 +188,14 @@ class ASExtractor(wx.Frame):
 					similarity_function = self.similarityFunction.GetValue()
 					keyphrase = extractor.keyphrase_train(text,article_type='Fulltext')
 					summary = extractor.summary_train(text,sentences_percent = sentences_percent,sim_func=similarity_function)
-					keyword_result = 'Keyphrases:\n' + '/'.join(keyphrase)
-					result += '   '+''.join(summary)
-			self.abstractPage.SetValue(result)
-			self.keywordPage.SetValue(keyword_result)	
+					keyword_result = '/'.join(keyphrase)
+					result += '   '+' '.join(summary)
+				self.abstractPage.SetValue(result)
+				#设置文本样式 
+				f = wx.Font(10, wx.ROMAN, wx.NORMAL, wx.NORMAL, True)  #创建一个字体
+				self.abstractPage.SetStyle(0, len(result), wx.TextAttr('black',wx.NullColor,f))
+		
+				self.keywordPage.SetValue(keyword_result)	
 		else:
 			#test 
 			#sentences_percent = self.sentencesPercent.GetValue()
