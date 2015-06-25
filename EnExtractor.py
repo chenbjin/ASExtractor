@@ -2,7 +2,7 @@
 from TextRank import EnKeywordExtraction, EnSentenceExtraction
 
 class EnExtractor(object):
-	"""docstring for EnExtractor"""
+	"""英文文摘提取器"""
 	def __init__(self, stop_words_file = './TextRank/trainer/stopword_en.data'):
 		super(EnExtractor, self).__init__()
 		self.keyphrase_extraction = EnKeywordExtraction(stop_words_file=stop_words_file)

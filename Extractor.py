@@ -3,7 +3,7 @@ import codecs
 from TextRank import KeywordExtraction, SentenceExtraction
 
 class Extractor(object):
-	"""docstring for Extractor"""
+	"""中文文摘提取器"""
 	def __init__(self, stop_words_file = None):
 		super(Extractor, self).__init__()
 		self.keyword_extraction = KeywordExtraction(stop_words_file=stop_words_file)

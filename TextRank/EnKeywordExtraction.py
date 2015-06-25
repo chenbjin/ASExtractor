@@ -11,7 +11,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 class EnKeywordExtraction(object):
-	"""docstring for EnKeywordExtraction"""
+	"""英文关键词提取"""
 	def __init__(self, stop_words_file=None):
 		super(EnKeywordExtraction, self).__init__()
 		self.text = ''
@@ -28,6 +28,7 @@ class EnKeywordExtraction(object):
 		self.counter = None
 
 	def combine(self, word_list,window = 2):
+		'''构造在window窗口长度下的单词组合'''
 		if window < 2:  
 			window = 2
 		for x in xrange(1,window):
@@ -103,6 +104,7 @@ class EnKeywordExtraction(object):
 			#print self.index_word[index],_
 	
 	def get_similarity(self,word1,word2):
+		'''计算相似度：基于WordNet语义词典'''
 		'''
 		print 'before stemmed:',word1
 		print 'after stemmed:',wn.morphy(word1.lower())
@@ -129,25 +131,9 @@ class EnKeywordExtraction(object):
 				if tmp > sim:
 					sim = tmp
 		return sim
-
-	def get_edge_weight(self,word1,word2,a = 0.7, b = 0.2, c = 0.1):
-		'''
-			w(vi,vj) = a*1 + b*[tf(word1)+tf(word2)] + c*IsHeadSen(w1,w2)
-		'''
-		weight = 0
-		is_w1 = 0
-		is_w2 = 0
-		tf_w1 = self.counter[word1]
-		tf_w2 = self.counter[word2]
-		if word1 in self.firstSen:
-			is_w1 = 1
-		if word2 in self.firstSen:
-			is_w2 = 1
-		#weight = a + b*((tf_w1 + tf_w2)/len(self.tag_text)) + c*((is_w1 + is_w2)/len(self.firstSen))
-		weight = a + b*(tf_w1 + tf_w2) + c*(is_w1 + is_w2)
-		return weight
 		
 	def get_keyphrases(self, article_type='Abstract'):
+		'''关键词组构建：两词或三词'''
 		if article_type == 'Abstract':
 			aThird = len(self.keywords)
 		elif article_type == 'Fulltext': 
@@ -217,6 +203,7 @@ class EnKeywordExtraction(object):
 		return modifiedKeyphrases
 
 	def get_keyphrases_maximal(self,article_type='Abstract'):
+		'''关键词组构建：最长字符匹配'''
 		if article_type == 'Abstract':
 			#aThird = len(self.keywords)
 			aThird = 10
@@ -254,6 +241,7 @@ class EnKeywordExtraction(object):
 		return modifiedKeyphrases[:12]
 
 	def get_tag(self,text):
+		'''对文本进行词性标注'''
 		return self.seg.get_tag_text(text)
 
 

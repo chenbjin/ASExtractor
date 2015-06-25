@@ -79,7 +79,7 @@ class EnSentenceExtraction(object):
 
 	def _get_similarity_standard(self, sentence1, sentence2):
 		'''
-		计算句子相似度,sentence1,sentence2为待计算的两句子
+		基于信息量，计算句子相似度,sentence1,sentence2为待计算的两句子
 		'''
 		words = list(set(sentence1+sentence2))
 		vector1 = [float(sentence1.count(word)) for word in words]
@@ -95,6 +95,9 @@ class EnSentenceExtraction(object):
 		return num_of_common_words / denominator*1.0
 
 	def _get_similarity_ld(self,sentence1,sentence2):
+		'''
+		基于编辑距离，计算句子相似度,sentence1,sentence2为待计算的两句子
+		'''
 		if len(sentence1) > len(sentence2):
 			sentence1,sentence2 = sentence2, sentence1
 		distances = range(len(sentence1) + 1)
@@ -109,6 +112,9 @@ class EnSentenceExtraction(object):
 		return distances[-1]
 
 	def _get_similarity_wordnet(self,sentence1,sentence2):
+		'''
+		基于WordNet语义词典，计算句子相似度,sentence1,sentence2为待计算的两句子
+		'''
 		sen1_len = len(sentence1)
 		sen2_len = len(sentence2)
 		sen2 = sentence2[:]

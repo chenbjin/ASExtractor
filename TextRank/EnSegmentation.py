@@ -7,7 +7,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 class EnWordSegmentation(object):
-	"""docstring for EnWordSegmentation"""
+	"""文本分割"""
 	def __init__(self, stop_words_file=None, tag=['NN','JJ','NNP','NNS','NNPS']):
 		super(EnWordSegmentation, self).__init__()
 		self.speech_tag_filter = tag
